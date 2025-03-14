@@ -30,6 +30,7 @@ class UserManager(BaseUserManager):
         return self.create_user(username, email, password, role=UserRoles.ADMIN, **extra_fields)
     
 class User(AbstractUser):
+    name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=UserRoles.CHOICES, default=UserRoles.STUDENT)
     library_card_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
