@@ -56,7 +56,7 @@ class Journal(models.Model):
     available_copies = models.IntegerField(default=1)
 
 
-    # Only for journals (ISSN is unique but some may not have it)
+    # Only for journals
     issn = models.CharField(
         max_length=30,
         unique=True,
