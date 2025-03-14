@@ -23,6 +23,8 @@ class Borrowing(models.Model):
             raise ValueError(f"No copies available for '{self.journal.title}'")
         if self.journal and not self.faculty_approved:
             raise ValueError("Faculty approval required for journals/magazines.")
+        if not self.user.library_card_number:
+            raise ValueError(f"Library Card not avalliable for {self.user.name}")
         
         # Reduce available copies when borrowing
         if not self.returned_at:
