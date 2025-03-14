@@ -1,12 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Borrowing
 from books.models import Book, Journal
+from users.models import UserRoles, Librarian, User
 from .serializers import BorrowingSerializer
 from django.contrib.auth.models import Group
+from django.utils  import timezone
 
 # Custom permissions
 class IsLibrarian(permissions.BasePermission):
@@ -91,7 +95,7 @@ class BanUserView(generics.UpdateAPIView):
     
     def update(self, request, *args, **kwargs):
         user_id = kwargs.get('user_id')
-        ban_days = request.data.get('ban_days', 30)  # Default 30 days
+        ban_days = request.data.get('ban_days', 10)  # Default ban of 10 days
         
         try:
             user = User.objects.get(id=user_id)
@@ -101,5 +105,84 @@ class BanUserView(generics.UpdateAPIView):
             return Response({"message": f"User banned for {ban_days} days"}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@login_required
+def view_books(request):
+    books = Book.objects.all()
+    return render(request, 'books/book_list.html', {'books': books})
+
+@login_required
+def borrow_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.user.role == UserRoles.STUDENT and not request.user.library_card_number:
+        return HttpResponseForbidden("You need a verified issue card to borrow books.")
     
+    if request.method == "POST":
+        borrowing = Borrowing(user=request.user, book=book, due_date=request.POST['due_date'])
+        try:
+            borrowing.save()
+            return redirect('view_books')
+        except ValueError as e:
+            return render(request, 'books/book_detail.html', {'book': book, 'error': str(e)})
     
+    return render(request, 'books/book_detail.html', {'book': book})
+
+@login_required
+def return_book(request, borrowing_id):
+    borrowing = get_object_or_404(Borrowing, id=borrowing_id)
+    if request.user.role == UserRoles.STUDENT and borrowing.user != request.user:
+        return HttpResponseForbidden("You can only return books you have borrowed.")
+    
+    borrowing.return_item()
+    return redirect('view_books')
+
+@login_required
+def manage_books(request):
+    if request.user.role != UserRoles.LIBRARIAN:
+        return HttpResponseForbidden("Only librarians can manage books.")
+    
+    books = Book.objects.all()
+    return render(request, 'books/manage_books.html', {'books': books})
+
+@login_required
+def add_book(request):
+    if request.user.role != UserRoles.LIBRARIAN:
+        return HttpResponseForbidden("Only librarians can add books.")
+    
+    if request.method == "POST":
+        title = request.POST['title']
+        author = request.POST.getlist('author')
+        publisher = request.POST['publisher']
+        pages = request.POST['pages']
+        price = request.POST['price']
+        genre = request.POST['genre']
+        topics = request.POST['topics']
+        available_copies = request.POST['available_copies']
+        
+        librarian = Librarian.objects.get(user=request.user)
+        librarian.add_book(title, author, publisher, pages, price, genre, topics, available_copies)
+        return redirect('manage_books')
+    
+    return render(request, 'books/add_book.html')
+
+@login_required
+def add_journal(request):
+    if request.user.role != UserRoles.LIBRARIAN:
+        return HttpResponseForbidden("Only librarians can add journals.")
+    
+    if request.method == "POST":
+        title = request.POST['title']
+        authors = request.POST.getlist('authors')
+        publisher = request.POST['publisher']
+        journal_type = request.POST['journal_type']
+        publication_date = request.POST['publication_date']
+        available_copies = request.POST['available_copies']
+        issn = request.POST['issn']
+        
+        librarian = Librarian.objects.get(user=request.user)
+        librarian.add_journal(title, authors, publisher, journal_type, publication_date, available_copies, issn)
+        return redirect('manage_books')
+    
+    return render(request, 'books/add_journal.html')
+
+
