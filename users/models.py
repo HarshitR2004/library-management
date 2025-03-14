@@ -30,7 +30,6 @@ class UserManager(BaseUserManager):
         return self.create_user(username, email, password, role=UserRoles.ADMIN, **extra_fields)
     
 class User(AbstractUser):
-    name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=UserRoles.CHOICES, default=UserRoles.STUDENT)
     library_card_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
@@ -39,13 +38,13 @@ class User(AbstractUser):
     
     groups = models.ManyToManyField(
         "auth.Group",
-        related_name="custom_user_groups",  # Fixes the clash
+        related_name="custom_user_groups", 
         blank=True
     )
     
     user_permissions = models.ManyToManyField(
         "auth.Permission",
-        related_name="custom_user_permissions",  # Fixes the clash
+        related_name="custom_user_permissions",  
         blank=True
     )
     
