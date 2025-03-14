@@ -28,7 +28,7 @@ class Book(models.Model):
     author = models.ManyToManyField(Author)  
     publisher = models.CharField(max_length=255)
     pages = models.IntegerField(validators=[MinValueValidator(1)])  # Ensures at least 1 page
-    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    price = models.DecimalField(max_digits=8)
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)  # Restricts genre selection
     topics = models.TextField(blank=True, null=True)  # Stores book topics
 
@@ -52,7 +52,7 @@ class Journal(models.Model):
     journal_type = models.CharField(max_length=50, choices=JOURNAL_TYPE_CHOICES)
     publication_date = models.DateField()
 
-    # Only for journals (ISSN is unique but may be absent for some)
+    # Only for journals (ISSN is unique but some may not have it)
     issn = models.CharField(
         max_length=30,
         unique=True,
