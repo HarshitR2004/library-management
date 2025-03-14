@@ -2,7 +2,7 @@ import os
 import django
 from django.test import TestCase
 from users.models import User, Student, Librarian, Admin
-from books.models import Author
+from books.models import Book, Author, Journal
 from datetime import datetime
 
 # Setup Django
@@ -42,7 +42,7 @@ class LibrarianPrivilegesTestCase(TestCase):
         # Add a book using the librarian
         book = self.librarian2.add_book(
             title="Test Book",
-            author=[self.author1, self.author2],
+            authors=[self.author1, self.author2],
             publisher="Test Publisher",
             pages=100,
             price=100.00,
@@ -82,3 +82,21 @@ class LibrarianPrivilegesTestCase(TestCase):
         self.assertEqual(journal.issn, "1234-5678")
         self.assertIn(self.author1, journal.authors.all())
         self.assertIn(self.author2, journal.authors.all())
+
+# Testing Admin privileges
+class TestAdmin(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Create an admin user
+        cls.user3 = User.objects.create_user(username="Admin", email="Admin@nitk.edu.in", password="test123")
+        cls.admin = Admin.objects.create(user=cls.user3)
+
+        # Create a student user
+        cls.user1 = User.objects.create_user(username="student_1", email="student1@nitk.edu.in", password="test123")
+        cls.student1 = Student.objects.create(user=cls.user1)
+
+    def test_ban_student(self):
+        # Ban the student using the admin
+        self.admin.ban_student(self.student1)
+        self.assertTrue(self.student1.is_banned)
+

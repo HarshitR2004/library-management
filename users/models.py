@@ -86,11 +86,12 @@ class Librarian(models.Model):
         self.user.save()
         super().save(*args, **kwargs)
 
-    def add_book(self, title, author, publisher, pages, price, genre, topics, available_copies):
+    def add_book(self, title, authors, publisher, pages, price, genre, topics, available_copies):
         if not self.user.is_librarian():
             raise PermissionError("Only librarians can add books.")
-        book = Book.objects.create(
+        book = Book.create_book(
             title=title,
+            authors=authors,
             publisher=publisher,
             pages=pages,
             price=price,
@@ -98,8 +99,6 @@ class Librarian(models.Model):
             topics=topics,
             available_copies=available_copies
         )
-        book.author.set(author)
-        book.save()
         return book
 
     def add_journal(self, title, authors, publisher, journal_type, publication_date, available_copies, issn=None):
@@ -132,7 +131,12 @@ class Admin(models.Model):
         self.user.save()
         super().save(*args, **kwargs)
 
+    def ban_student(self, student):
+        if not self.can_ban_users:
+            raise PermissionError("This admin does not have permission to ban students.")
+        student.is_banned = True
+        student.save()
+
     def __str__(self):
         return f"Admin: {self.user.username}"
-
 
