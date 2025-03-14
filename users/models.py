@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from books.models import Book, Journal
 
 
 class UserRoles:
@@ -66,8 +67,9 @@ class User(AbstractUser):
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     borrow_limit = models.IntegerField(default=5)
-    library_card_number = models.CharField(max_length=10, unique=True, null=True, blank=True)  # Moved here
-
+    library_card_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    is_banned = models.BooleanField(default=False)
+    
     def save(self, *args, **kwargs):
         """ Ensure the user is always a student when creating a Student instance """
         self.user.role = UserRoles.STUDENT
@@ -83,6 +85,37 @@ class Librarian(models.Model):
         self.user.role = UserRoles.LIBRARIAN
         self.user.save()
         super().save(*args, **kwargs)
+
+    def add_book(self, title, author, publisher, pages, price, genre, topics, available_copies):
+        if not self.user.is_librarian():
+            raise PermissionError("Only librarians can add books.")
+        book = Book.objects.create(
+            title=title,
+            publisher=publisher,
+            pages=pages,
+            price=price,
+            genre=genre,
+            topics=topics,
+            available_copies=available_copies
+        )
+        book.author.set(author)
+        book.save()
+        return book
+
+    def add_journal(self, title, authors, publisher, journal_type, publication_date, available_copies, issn=None):
+        if not self.user.is_librarian():
+            raise PermissionError("Only librarians can add journals.")
+        journal = Journal.objects.create(
+            title=title,
+            publisher=publisher,
+            journal_type=journal_type,
+            publication_date=publication_date,
+            available_copies=available_copies,
+            issn=issn
+        )
+        journal.authors.set(authors)
+        journal.save()
+        return journal
 
     def __str__(self):
         return f"Librarian: {self.user.username}"
