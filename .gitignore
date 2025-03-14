@@ -1,2 +1,4 @@
 *.pyc
 *.pyc
+/borrowing/__pycache__
+*.pyc
