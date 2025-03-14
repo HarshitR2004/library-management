@@ -28,7 +28,7 @@ class Book(models.Model):
     author = models.ManyToManyField(Author)  
     publisher = models.CharField(max_length=255)
     pages = models.IntegerField(validators=[MinValueValidator(1)])  # Ensures at least 1 page
-    price = models.DecimalField(max_digits=8)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)  # Restricts genre selection
     topics = models.TextField(blank=True, null=True)  # Stores book topics
 
