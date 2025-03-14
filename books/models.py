@@ -31,6 +31,8 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)  # Restricts genre selection
     topics = models.TextField(blank=True, null=True)  # Stores book topics
+    available_copies = models.IntegerField(default=1)
+
 
     def __str__(self):
         authors = ", ".join(author.name for author in self.author.all())
@@ -51,6 +53,8 @@ class Journal(models.Model):
     publisher = models.CharField(max_length=255)
     journal_type = models.CharField(max_length=50, choices=JOURNAL_TYPE_CHOICES)
     publication_date = models.DateField()
+    available_copies = models.IntegerField(default=1)
+
 
     # Only for journals (ISSN is unique but some may not have it)
     issn = models.CharField(
