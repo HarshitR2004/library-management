@@ -1,3 +1,10 @@
+import django
 from django.test import TestCase
+import os
 
-# Create your tests here.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'elibrary.settings')
+django.setup()
+
+class TestAddBooks(TestCase):
+    """Testing if Librarian can add books"""
+    
