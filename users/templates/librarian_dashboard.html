@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Librarian Dashboard</h2>
+<p>Welcome, {{ request.user.username }}! You can manage books.</p>
+<a href="{% url 'add_book' %}">Add Books</a>
+<a href="{% url 'delete_book' book_id=1 %}">Delete Books</a>
+{% endblock %}
