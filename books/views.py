@@ -12,7 +12,7 @@ def book_list(request):
 @login_required
 def add_book(request):
     """Only admins and librarians can add books."""
-    if not request.user.is_admin and not request.user.is_librarian:
+    if not request.user.is_admin() and not request.user.is_librarian():
         return HttpResponseForbidden("You do not have permission to add books.")
 
     if request.method == "POST":
@@ -29,7 +29,7 @@ def add_book(request):
 def delete_book(request, book_id):
     """Only admins and librarians can delete books."""
     book = get_object_or_404(Book, id=book_id)
-    if not request.user.is_admin and not request.user.is_librarian:
+    if not request.user.is_admin() and not request.user.is_librarian():
         return HttpResponseForbidden("You do not have permission to delete books.")
     
     book.delete()

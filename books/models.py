@@ -5,7 +5,7 @@ from enum import Enum
 
 class Author(models.Model):
     """Stores author details."""
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -29,7 +29,7 @@ class GenreChoices(Enum):
 class Book(models.Model):
     """Represents books in the library."""
     title = models.CharField(max_length=255)
-    author = models.ManyToManyField(Author)
+    authors = models.ManyToManyField(Author)
     publisher = models.CharField(max_length=255)
     pages = models.IntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -38,7 +38,7 @@ class Book(models.Model):
     available_copies = models.IntegerField(default=1, validators=[MinValueValidator(0)])
 
     def __str__(self):
-        return f"{self.title} by {', '.join(self.author.values_list('name', flat=True))}"
+        return f"{self.title} by {', '.join(self.authors.values_list('name', flat=True))}"
 
 class Journal(models.Model):
     """Represents academic journals, magazines, and newspapers."""

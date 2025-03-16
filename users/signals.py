@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group, Permission
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import User, UserRoles
+from .models import User
 
 
 def assign_role_permissions(user):
@@ -39,11 +39,15 @@ def assign_role_permissions(user):
 
     # Assign permissions to the group
     for perm in permissions:
-        permission = Permission.objects.get(codename=perm)
-        group.permissions.add(permission)
+        try:
+            permission = Permission.objects.get(codename=perm)
+            group.permissions.add(permission)
+        except Permission.DoesNotExist:
+            pass  # Handle case where permission doesn't exist
 
     # Assign the group to the user
     user.groups.add(group)
+
 
 @receiver(post_save, sender=User)
 def set_user_role_permissions(sender, instance, created, **kwargs):

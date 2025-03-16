@@ -16,7 +16,7 @@ import os
 
 
 AUTH_USER_MODEL = 'users.User'
-LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -68,7 +68,7 @@ ROOT_URLCONF = 'elibrary.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "users/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
