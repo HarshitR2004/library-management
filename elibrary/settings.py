@@ -14,6 +14,11 @@ from pathlib import Path
 import dj_database_url
 import os 
 
+
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = "/login/"
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -1,4 +1,4 @@
 *.pyc
-*.pyc  # Duplicate entry
+*.pyc  
 /borrowing/__pycache__
-*.pyc  # Duplicate entry
+*.pyc  

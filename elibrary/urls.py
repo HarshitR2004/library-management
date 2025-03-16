@@ -18,5 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("api/borrowing/", include("borrowing.urls")),  # Include Borrowing App URLs
+    path('admin/', admin.site.urls),
+    path("users/", include("users.urls")),
 ]
