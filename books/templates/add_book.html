@@ -1,18 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Add a New Book</h2>
 
-  <form method="post">
-    {% csrf_token %}
 
-    <!-- Use Django form fields properly -->
-    {{ form.as_p }}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}  <!-- This automatically renders all fields including our new author_name -->
+  <button type="submit">Add {{ item_type|title }}</button>
+</form>
 
-    <button type="submit">Add Book</button>
-  </form>
-
-  <br>
-  <a href="{% url 'book_list' %}">Back to Book List</a>
 {% endblock %}
-

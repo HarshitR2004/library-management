@@ -1,5 +1,13 @@
-<div class="book">
+<div class="book" style="border: 2px solid #ccc; padding: 10px; margin: 10px; border-radius: 5px;">
     <h3>{{ book.title }}</h3>
+
+    <p><strong>Author:</strong> {{ book.author.name }}</p>
+
+    <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+
+    <p><strong>Pages:</strong> {{ book.pages }}</p>
+
+    <p><strong>Genre:</strong> {{ book.get_genre_display }}</p>
 
     <p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
     
@@ -11,10 +19,22 @@
         {% endif %}
     </p>
 
+    <hr> 
+
+    {% comment %} <div>
+        <a href="{% url 'add_to_reading_list' book.id %}">Add to Reading List</a> |
+        <a href="{% url 'borrow_book' book.id %}">Borrow</a>
+    </div> {% endcomment %}
+
     {% if request.user.is_admin or request.user.is_librarian %}
-        <a href="{% url 'delete_book' book.id %}">Delete</a>
+        <hr> 
+        <div>
+            <a href="{% url 'add_book' %}">Add New Book</a> |
+            <a href="{% url 'delete_item' 'book' book.id %}">Delete</a>
+        </div>
     {% endif %}
 </div>
+
 
 
 
