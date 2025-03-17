@@ -1,7 +1,20 @@
 <div class="book">
     <h3>{{ book.title }}</h3>
-    <p>By {{ book.authors.all|join:", " }}</p>
+
+    <p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
+    
+    <p><strong>Topics:</strong> 
+        {% if book.topics %}
+            {{ book.topics }}
+        {% else %}
+            <em>No topics listed</em>
+        {% endif %}
+    </p>
+
     {% if request.user.is_admin or request.user.is_librarian %}
         <a href="{% url 'delete_book' book.id %}">Delete</a>
     {% endif %}
 </div>
+
+
+

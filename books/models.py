@@ -29,7 +29,6 @@ class GenreChoices(Enum):
 class Book(models.Model):
     """Represents books in the library."""
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField(Author)
     publisher = models.CharField(max_length=255)
     pages = models.IntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -38,11 +37,23 @@ class Book(models.Model):
     available_copies = models.IntegerField(default=1, validators=[MinValueValidator(0)])
 
     def __str__(self):
-        return f"{self.title} by {', '.join(self.authors.values_list('name', flat=True))}"
+        authors = ", ".join(ba.author.name for ba in self.bookauthor_set.all())
+        return f"{self.title} by {authors}" if authors else self.title
+
+class BookAuthor(models.Model):
+    """Intermediary model for Book and Author many-to-many relationship."""
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="authors")
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("book", "author")
+
+    def __str__(self):
+        return f"{self.book.title} - {self.author.name}"
 
 class Journal(models.Model):
     """Represents academic journals, magazines, and newspapers."""
-
+    
     JOURNAL_TYPE_CHOICES = [
         ("Journal", "Journal"),
         ("Magazine", "Magazine"),
@@ -50,7 +61,6 @@ class Journal(models.Model):
     ]
 
     title = models.CharField(max_length=255, db_index=True)
-    authors = models.ManyToManyField(Author, blank=True, related_name="journals")
     publisher = models.CharField(max_length=255)
     journal_type = models.CharField(max_length=50, choices=JOURNAL_TYPE_CHOICES)
     publication_date = models.DateField()
@@ -69,6 +79,18 @@ class Journal(models.Model):
             raise ValidationError("ISSN is required for Journals.")
 
     def __str__(self):
-        return f"{self.title} ({self.journal_type}) - {self.publication_date}"
+        authors = ", ".join(self.authors.values_list("author__name", flat=True))
+        return f"{self.title} ({self.journal_type}) - {self.publication_date} by {authors}" if authors else self.title
+
+class JournalAuthor(models.Model):
+    """Intermediary model for Journal and Author many-to-many relationship."""
+    journal = models.ForeignKey(Journal, on_delete=models.CASCADE, related_name="authors")
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("journal", "author")
+
+    def __str__(self):
+        return f"{self.journal.title} - {self.author.name}"
 
 
