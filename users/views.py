@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseForbidden
 from books.forms import BookForm
 from books.models import Book
@@ -33,13 +33,19 @@ def login_view(request):
 
     return render(request, "login.html")
 
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
 @login_required
 def admin_dashboard(request):
-    return render(request, "admin_dashboard.html")
+    books = Book.objects.all()
+    return render(request, "admin_dashboard.html", {"books": books})
 
 @login_required
 def librarian_dashboard(request):
-    return render(request, "librarian_dashboard.html")
+    books = Book.objects.all()
+    return render(request, "librarian_dashboard.html", {"books": books})
 
 @login_required
 def student_dashboard(request):

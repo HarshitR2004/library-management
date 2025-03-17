@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Student Dashboard</h2>
-<p>Welcome, {{ request.user.username }}! Here are your books:</p>
-{% include "book_list.html" %}
+<p>Welcome, {{ request.user.username }}! Books</p>
+<a href="{% url 'logout' %}">Logout</a> 
+{% include "books/book_list.html" %}
 {% endblock %}
