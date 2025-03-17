@@ -14,11 +14,6 @@ def login_view(request):
         if user is not None:
             login(request, user)
 
-            # Handle 'next' for redirecting back to protected pages
-            next_url = request.GET.get("next")
-            if next_url:
-                return redirect(next_url)
-
             # Redirect based on user role
             if user.is_admin():
                 return redirect("admin_dashboard")
