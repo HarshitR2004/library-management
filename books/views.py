@@ -6,9 +6,15 @@ from .forms import BookForm
 
 @login_required
 def book_list(request):
-    books = Book.objects.all() 
-    return render(request, "books/book_list.html", {"books": books})
-
+    books = Book.objects.all()
+    if request.user.is_admin():
+        return render(request, "admin_dashboard.html", {"books": books})
+    elif request.user.is_librarian():
+        return render(request, "librarian_dashboard.html", {"books": books})
+    elif request.user.is_student():
+        return render(request, "student_dashboard.html", {"books": books})
+    else:
+        return HttpResponseForbidden("You do not have permission to view this page.")
 @login_required
 def add_book(request):
     """Only admins and librarians can add books."""
@@ -19,11 +25,14 @@ def add_book(request):
         form = BookForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("book_list")
+            if request.user.is_admin():
+                return redirect("admin_dashboard")
+            elif request.user.is_librarian():
+                return redirect("librarian_dashboard")
     else:
         form = BookForm()
     
-    return render(request, "books/add_book.html", {"form": form})
+    return render(request, "add_book.html", {"form": form})
 
 @login_required
 def delete_book(request, book_id):
@@ -32,6 +41,12 @@ def delete_book(request, book_id):
     if not request.user.is_admin() and not request.user.is_librarian():
         return HttpResponseForbidden("You do not have permission to delete books.")
     
-    book.delete()
-    return redirect("book_list")
+    if request.method == "POST":
+        book.delete()
+        if request.user.is_admin():
+            return redirect("admin_dashboard")
+        elif request.user.is_librarian():
+            return redirect("librarian_dashboard")
+    
+    return render(request, "confirm_delete_book.html", {"book": book})
 

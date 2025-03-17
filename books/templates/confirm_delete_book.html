@@ -1,0 +1,13 @@
+<!-- filepath: c:\Users\admin\OneDrive\Desktop\IRIS_Web_Rec25_231MT017\books\templates\books\confirm_delete_book.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Confirm Delete Book</h2>
+  <p>Are you sure you want to delete the book "{{ book.title }}"?</p>
+  
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+    <a href="{% url 'book_list' %}">Cancel</a>
+  </form>
+{% endblock %}

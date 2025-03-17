@@ -1,7 +1,3 @@
 {% for book in books %}
-    <h3>{{ book.title }}</h3>
-    <p>By {{ book.authors.all|join:", " }}</p>
-    {% if request.user.is_admin or request.user.is_librarian %}
-        <a href="{% url 'delete_book' book.id %}">Delete</a>
-    {% endif %}
+    {% include "book_component.html" with book=book %}
 {% endfor %}
