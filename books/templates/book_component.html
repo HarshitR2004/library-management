@@ -1,32 +1,51 @@
-<div class="book" style="border: 2px solid #ccc; padding: 10px; margin: 10px; border-radius: 5px;">
-    <h3>{{ book.title }}</h3>
+<div class="card text-white bg-dark mb-3">
+    <div class="card-body">
+        <h3 class="card-title text-primary">{{ book.title }}</h3>
+        
+        <button class="btn btn-secondary w-100 mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#bookDetails-{{ book.id }}" aria-expanded="false">
+            View More
+        </button>
 
-    <p><strong>Author:</strong> {{ book.author.name }}</p>
-    <p><strong>Publisher:</strong> {{ book.publisher }}</p>
-    <p><strong>Pages:</strong> {{ book.pages }}</p>
-    <p><strong>Subject:</strong> {{ book.get_genre_display }}</p>
-    <p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
+        <div class="collapse mt-3" id="bookDetails-{{ book.id }}">
+            <p><strong>Author:</strong> {{ book.author.name }}</p>
+            <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+            <p><strong>Pages:</strong> {{ book.pages }}</p>
+            <p><strong>Subject:</strong> {{ book.get_genre_display }}</p>
+            <p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
 
-    <p><strong>Topics:</strong> 
-        {% if book.topics %}
-            {{ book.topics }}
-        {% else %}
-            <em>No topics listed</em>
-        {% endif %}
-    </p>
-
-    <hr> 
-
-    {% if request.user.is_admin or request.user.is_librarian %}
-        <hr> 
-        <div>
-            <a href="{% url 'add_book' %}">Add New Book</a> |
-            <form id="deleteForm-{{ book.id }}" method="POST" action="{% url 'delete_item' 'book' book.id %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="button" onclick="confirmDelete('{{ book.id }}')">Delete</button>
-            </form>
+            <p><strong>Topics:</strong> 
+                {% if book.topics %}
+                    {{ book.topics }}
+                {% else %}
+                    <em>No topics listed</em>
+                {% endif %}
+            </p>
         </div>
-    {% endif %}
+        
+
+    
+        <hr>
+
+        {% if request.user.is_student %}
+            <div class="text-center mb-3">
+                {% if not request.user.is_banned %}
+                    <button type="button" class="btn btn-primary w-100" disabled>Borrow (Coming Soon)</button>
+                {% endif %}
+                <button type="button" class="btn btn-info w-100" disabled>Add to Reading List (Coming Soon)</button>
+            </div>
+        {% endif %}
+        
+
+
+        {% if request.user.is_admin or request.user.is_librarian %}
+            <div class="text-center mb-3">
+                <form id="deleteForm-{{ book.id }}" method="POST" action="{% url 'delete_item' 'book' book.id %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ book.id }}')">Delete</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 <script>

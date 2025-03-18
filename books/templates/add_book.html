@@ -1,12 +1,31 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}Add Book{% endblock %}
 
 {% block content %}
-
-
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Add {{ item_type|title }}</button>
-</form>
-
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Add a New Book</h2>
+        
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <div class="d-flex justify-content-between">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">← Back</a>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}
