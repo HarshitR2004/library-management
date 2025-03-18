@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseForbidden
-from books.forms import BookForm
 from books.models import Book
+from books.forms import AdditionForm
+
 
 def login_view(request):
     if request.method == "POST":
@@ -54,11 +55,11 @@ def add_book(request):
         return HttpResponseForbidden("You do not have permission to add books.")
 
     if request.method == "POST":
-        form = BookForm(request.POST)
+        form = AdditionForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect("book_list")
     else:
-        form = BookForm()
+        form = AdditionForm()
     
-    return render(request, "books/add_book.html", {"form": form})
+    return render(request, "add_book.html", {"form": form})
