@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'books',
     'users',
+    'borrowing',
     'rest_framework',
     'django_extensions'
     

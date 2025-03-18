@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 from .models import Book, Journal
 from .forms import AdditionForm
+
+
 class BookListView(LoginRequiredMixin, ListView):
     model = Book
     context_object_name = "books"  
