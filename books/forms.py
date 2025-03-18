@@ -18,7 +18,7 @@ class AdditionForm(forms.ModelForm):
         
         if model:
             self.Meta.model = model  
-
+    
     def clean_author(self):
         """Ensure the author exists or create a new one."""
         author_name = self.cleaned_data.get("author").strip()

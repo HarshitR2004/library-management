@@ -5,7 +5,7 @@ from users.models import Student
 
 class Borrow(models.Model):
     """Model to track book borrow transactions."""
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)  # Only students can borrow
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)  
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrow_date = models.DateTimeField(default=timezone.now)
     due_date = models.DateTimeField()
@@ -15,7 +15,7 @@ class Borrow(models.Model):
 
     def save(self, *args, **kwargs):
         """Ensure only students can borrow, check inventory, and reduce book count."""
-        if not self.pk:  # 
+        if not self.pk:  
             if self.book.available_copies <= 0:
                 raise ValueError(f"No available copies of {self.book.title}.")
             

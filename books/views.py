@@ -1,21 +1,25 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
-from .models import Book, Journal, Author
-from django.forms import modelform_factory
+from .models import Book, Journal
 from .forms import AdditionForm
+class BookListView(LoginRequiredMixin, ListView):
+    model = Book
+    context_object_name = "books"  
 
-@login_required
-def book_list(request):
-    books = Book.objects.all()
-    if request.user.is_admin():
-        return render(request, "admin_dashboard.html", {"books": books})
-    elif request.user.is_librarian():
-        return render(request, "librarian_dashboard.html", {"books": books})
-    elif request.user.is_student():
-        return render(request, "student_dashboard.html", {"books": books})
-    else:
-        return HttpResponseForbidden("You do not have permission to view this page.")
+    def get_template_names(self):
+        """Return different templates based on the user's role."""
+        user = self.request.user
+        if hasattr(user, "is_admin") and user.is_admin():
+            return ["admin_dashboard.html"]
+        elif hasattr(user, "is_librarian") and user.is_librarian():
+            return ["librarian_dashboard.html"]
+        elif hasattr(user, "is_student") and user.is_student():
+            return ["student_dashboard.html"]
+        else:
+            return HttpResponseForbidden("You do not have permission to view this page.") 
     
     
 @login_required
@@ -71,5 +75,5 @@ def delete_item(request, item_type, item_id):
         elif getattr(request.user, "is_librarian", False):
             return redirect("librarian_dashboard")
 
-    return render(request, "confirm_delete_item.html", {"item": item, "item_type": item_type})
+    
 

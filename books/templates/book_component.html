@@ -2,15 +2,11 @@
     <h3>{{ book.title }}</h3>
 
     <p><strong>Author:</strong> {{ book.author.name }}</p>
-
     <p><strong>Publisher:</strong> {{ book.publisher }}</p>
-
     <p><strong>Pages:</strong> {{ book.pages }}</p>
-
-    <p><strong>Genre:</strong> {{ book.get_genre_display }}</p>
-
+    <p><strong>Subject:</strong> {{ book.get_genre_display }}</p>
     <p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
-    
+
     <p><strong>Topics:</strong> 
         {% if book.topics %}
             {{ book.topics }}
@@ -21,19 +17,25 @@
 
     <hr> 
 
-    {% comment %} <div>
-        <a href="{% url 'add_to_reading_list' book.id %}">Add to Reading List</a> |
-        <a href="{% url 'borrow_book' book.id %}">Borrow</a>
-    </div> {% endcomment %}
-
     {% if request.user.is_admin or request.user.is_librarian %}
         <hr> 
         <div>
             <a href="{% url 'add_book' %}">Add New Book</a> |
-            <a href="{% url 'delete_item' 'book' book.id %}">Delete</a>
+            <form id="deleteForm-{{ book.id }}" method="POST" action="{% url 'delete_item' 'book' book.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="button" onclick="confirmDelete('{{ book.id }}')">Delete</button>
+            </form>
         </div>
     {% endif %}
 </div>
+
+<script>
+    function confirmDelete(bookId) {
+        if (confirm("Are you sure you want to delete this book?")) {
+            document.getElementById("deleteForm-" + bookId).submit();
+        }
+    }
+</script>
 
 
 

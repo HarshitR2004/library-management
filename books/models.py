@@ -9,36 +9,34 @@ class Author(models.Model):
 
     def __str__(self):
         return self.name
-
-class GenreChoices(Enum):
-    METALLURGY = "Metallurgy"
-    CS = "Computer Science"
-    ECE = "ECE"
-    EEE = "EEE"
-    MECHANICAL = "Mechanical"
-    CIVIL = "Civil"
-    AI = "AI"
-    DATA_SCIENCE = "Data Science"
-    MINING = "Mining"
-    IT = "IT"
-
-    @classmethod
-    def choices(cls):
-        return [(tag.value, tag.name.replace("_", " ")) for tag in cls]
-
+    
 class Book(models.Model):
     """Represents books in the library."""
+    
+    GenreChoices = [
+    ('Metallurgy', 'METALLURGY'),
+    ('Computer Science', 'CS'),
+    ('ECE', 'ECE'),
+    ('EEE', 'EEE'),
+    ('Mechanical', 'MECHANICAL'),
+    ('Civil', 'CIVIL'),
+    ('AI', 'AI'),
+    ('Data Science', 'DATA_SCIENCE'),
+    ('Mining', 'MINING'),
+    ('IT', 'IT')
+]
+
     title = models.CharField(max_length=255)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     publisher = models.CharField(max_length=255)
     pages = models.IntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    genre = models.CharField(max_length=50, choices=GenreChoices.choices())
+    genre = models.CharField(max_length=50, choices=GenreChoices)
     topics = models.TextField(blank=True, null=True)
     available_copies = models.IntegerField(default=1, validators=[MinValueValidator(0)])
 
     def __str__(self):
-        return f"{self.title} by {self.author.name}"
+        return self.title
 
 class Journal(models.Model):
     """Represents academic journals, magazines, and newspapers."""

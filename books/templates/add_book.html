@@ -5,7 +5,7 @@
 
 <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}  <!-- This automatically renders all fields including our new author_name -->
+  {{ form.as_p }}
   <button type="submit">Add {{ item_type|title }}</button>
 </form>
 
