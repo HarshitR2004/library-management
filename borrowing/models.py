@@ -3,11 +3,6 @@ from django.utils import timezone
 from books.models import Book
 from users.models import Student  
 
-from django.db import models
-from django.utils import timezone
-from users.models import Student
-from books.models import Book
-
 class Borrow(models.Model):
     """Model to track book borrow transactions with librarian approval."""
 

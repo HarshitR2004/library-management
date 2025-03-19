@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Borrow Requests</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Pending Requests</h3>
+        </div>
+        <div class="card-body">
+            {% if pending_requests %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Book</th>
+                            <th>Request Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in pending_requests %}
+                        <tr>
+                            <td>{{ request.student.user.username }}</td>
+                            <td>{{ request.book.title }}</td>
+                            <td>{{ request.borrow_date|date:"M d, Y" }}</td>
+                            <td>
+                                <form style="display: inline;" method="post" action="{% url 'approve-borrow-request' request.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form style="display: inline;" method="post" action="{% url 'reject-borrow-request' request.id %}">
+                                    {% csrf_token %}
+                                    <input type="text" name="reason" placeholder="Rejection reason" class="form-control-sm">
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No pending requests.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Request History</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Book</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in approved_requests %}
+                    <tr class="table-success">
+                        <td>{{ request.student.user.username }}</td>
+                        <td>{{ request.book.title }}</td>
+                        <td>Approved</td>
+                        <td>{{ request.borrow_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for request in rejected_requests %}
+                    <tr class="table-danger">
+                        <td>{{ request.student.user.username }}</td>
+                        <td>{{ request.book.title }}</td>
+                        <td>Rejected</td>
+                        <td>{{ request.borrow_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
+</div>
+{% endblock %}
