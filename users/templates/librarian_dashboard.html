@@ -3,6 +3,7 @@
 <h2>Librarian Dashboard</h2>
 <p>Welcome, {{ request.user.username }}! You can manage books.</p>
 <a href="{% url 'add_book' %}" class="btn btn-success">Add Books</a>
+<a href="{% url 'borrow_status' %}" class="btn btn-primary">Manage Requests</a>
 <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
 <div style="height: 50px;"></div> 
 {% include "book_list.html" %}

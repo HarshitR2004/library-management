@@ -1,5 +1,3 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
@@ -7,7 +5,7 @@ from .models import Book, Journal
 from .forms import AdditionForm
 
 
-class BookListView(LoginRequiredMixin, ListView):
+class BookListView(ListView):
     model = Book
     context_object_name = "books"  
 
@@ -24,7 +22,6 @@ class BookListView(LoginRequiredMixin, ListView):
             return HttpResponseForbidden("You do not have permission to view this page.") 
     
     
-@login_required
 def add_item(request, item_type):
     """Handles adding both Books and Journals dynamically."""
     
@@ -52,7 +49,7 @@ def add_item(request, item_type):
     return render(request, "add_book.html", {"form": form, "item_type": item_type})
 
        
-@login_required
+
 def delete_item(request, item_type, item_id):
     """Only admins and librarians can delete books or journals."""
     

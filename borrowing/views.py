@@ -1,11 +1,10 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from .models import Borrow
 from users.models import Student
 from books.models import Book
 
-@login_required
+
 def borrow_request(request, book_id):
     """Student requests to borrow a book (Pending status)."""
     if not request.user.is_student():
@@ -25,8 +24,20 @@ def borrow_request(request, book_id):
     
     return redirect("student_dashboard")
 
-@login_required
 def borrow_status(request):
     """Student checks the status of their borrow requests."""
     borrow_requests = Borrow.objects.filter(student__user=request.user)
     return render(request, "borrow_status.html", {"borrow_requests": borrow_requests})
+
+def manage_status(request):
+    """Libarian can manage the status of the borrow requests"""
+    if not request.user.is_libarian:
+        messages.error(request, "Only Librarians can manage borrow status")
+        
+    approval_status = get_object_or_404(Borrow, user = request.user)
+    
+    if approval_status.status != "Pending":
+        messages.error(request, "Request already processed")
+    
+    
+    

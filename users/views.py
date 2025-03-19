@@ -33,6 +33,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+
 @login_required
 def admin_dashboard(request):
     books = Book.objects.all()
@@ -48,7 +49,6 @@ def student_dashboard(request):
     books = Book.objects.all()
     return render(request, "student_dashboard.html", {"books": books})
 
-@login_required
 def add_book(request):
     """Only admins and librarians can add books."""
     if not request.user.is_admin() and not request.user.is_librarian():
