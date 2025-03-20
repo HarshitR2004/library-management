@@ -66,15 +66,6 @@ class Librarian(models.Model):
         self.user.save()
         super().save(*args, **kwargs)
         
-    def verify_borrow(self, borrow):
-        if not self.can_approve_borrow:
-            raise PermissionError("This librarian can't approve borrow requests.")
-        borrow.librarian_approved = True
-        borrow.save(update_fields=["librarian_approved"])
-
-    def verify_return(self, return_request):
-        return_request.return_approved = True
-        return_request.save(update_fields=["return_approved"])
 
 
 # Admin Model
@@ -90,17 +81,6 @@ class Admin(models.Model):
         self.user.save()
         super().save(*args, **kwargs)
 
-    def ban_student(self, student, duration_days=30):
-        if not self.can_ban_users:
-            raise PermissionError("This admin does not have permission to ban students.")
-        student.is_banned = True
-        student.save()
-
-    def manage_dues(self, student, amount):
-        if not self.can_manage_dues:
-            raise PermissionError("This admin does not have permission to manage dues.")
-        student.dues += amount
-        student.save()
 
     def __str__(self):
         return f"Admin: {self.user.username}"

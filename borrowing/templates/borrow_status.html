@@ -11,6 +11,7 @@
                 <th>Status</th>
                 <th>Borrow Date</th>
                 <th>Due Date</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,19 +29,23 @@
                 </td>
                 <td>{{ request.borrow_date|date:"Y-m-d" }}</td>
                 <td>{% if request.due_date %}{{ request.due_date|date:"Y-m-d" }}{% else %} - {% endif %}</td>
+                <td>
+                    {% if request.status == "Approved" and not request.is_returned %}
+                        <a href="{% url 'request_return_book' request.id %}" class="btn btn-danger btn-sm">Return Book</a>
+                    {% endif %}
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="text-center">No borrow requests found.</td>
+                <td colspan="5" class="text-center">No borrow requests found.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <div class="mt-4">
-        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+        <button class="btn btn-primary" onclick="history.back()">Back</button>
     </div>
-
 </div>
 {% endblock %}
 

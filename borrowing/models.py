@@ -11,6 +11,7 @@ class Borrow(models.Model):
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected'),
         ('Returned', 'Returned'),
+        ('Pending Return','Pending Return')
     ]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -20,7 +21,7 @@ class Borrow(models.Model):
     return_date = models.DateTimeField(null=True, blank=True)
     is_returned = models.BooleanField(default=False)
     is_overdue = models.BooleanField(default=False)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 
     def save(self, *args, **kwargs):
         """Ensure book availability and update inventory only after approval."""
@@ -62,7 +63,7 @@ class Borrow(models.Model):
         """Mark book as returned, update inventory, and check for overdue status."""
         if self.is_returned:
             raise ValueError("This book has already been returned.")
-
+        
         self.return_date = timezone.now()
         self.is_returned = True
         self.status = "Returned"
