@@ -25,7 +25,7 @@ class Borrow(models.Model):
 
     def save(self, *args, **kwargs):
         """Ensure book availability and update inventory only after approval."""
-        if not self.pk:  # New borrow request
+        if not self.pk:  
             if self.book.available_copies <= 0:
                 raise ValueError(f"No available copies of {self.book.title}.")
             

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Returns</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Book</th>
+                <th>Return Requested</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in pending_returns %}
+            <tr>
+                <td>{{ request.student.user.username }}</td>
+                <td>{{ request.book.title }}</td>
+                <td>{{ request.borrow_date|date:"Y-m-d" }}</td>
+                <td>
+                    <a href="{% url 'approve_return' request.id %}" class="btn btn-success">Approve</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No pending returns.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="mt-4">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
+</div>
+{% endblock %}

@@ -32,7 +32,6 @@
                                 </form>
                                 <form style="display: inline;" method="post" action="{% url 'reject-borrow-request' request.id %}">
                                     {% csrf_token %}
-                                    <input type="text" name="reason" placeholder="Rejection reason" class="form-control-sm">
                                     <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                                 </form>
                             </td>
