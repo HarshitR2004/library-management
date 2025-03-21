@@ -18,7 +18,7 @@ def borrow_request(request, book_id):
         return redirect("student_dashboard")
 
     borrow_entry = Borrow.objects.create(student=student, book=book, status="Pending")
-    
+    borrow_entry.sava()
     
     return redirect("student_dashboard")
 
