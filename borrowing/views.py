@@ -13,12 +13,29 @@ def borrow_request(request, book_id):
     student = get_object_or_404(Student, user=request.user)
     book = get_object_or_404(Book, id=book_id)
 
-    existing_borrow = Borrow.objects.filter(student=student, is_returned=False).exclude(status="Rejected").exists()
+    # Check if the student has already borrowed this specific book
+    existing_borrow = Borrow.objects.filter(
+        student=student, 
+        book=book,
+        is_returned=False
+    ).exclude(status="Rejected").exists()
+    
     if existing_borrow:
+        messages.warning(request, "You already have a request for this book.")
+        return redirect("student_dashboard")
+
+    # Check if student has reached their borrow limit
+    active_borrows_count = Borrow.objects.filter(
+        student=student,
+        is_returned=False
+    ).exclude(status="Rejected").count()
+    
+    if active_borrows_count >= student.borrow_limit:
+        messages.warning(request, f"You've reached your borrow limit of {student.borrow_limit} books.")
         return redirect("student_dashboard")
 
     borrow_entry = Borrow.objects.create(student=student, book=book, status="Pending")
-    borrow_entry.sava()
+    messages.success(request, f"Your request to borrow '{book.title}' has been submitted.")
     
     return redirect("student_dashboard")
 

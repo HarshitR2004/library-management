@@ -23,6 +23,10 @@
                         <span class="badge bg-warning text-dark">Pending</span>
                     {% elif request.status == "Approved" %}
                         <span class="badge bg-success">Approved</span>
+                    {% elif request.status == "Pending Return" %}
+                        <span class="badge bg-info">Pending Return</span>
+                    {% elif request.status == "Returned" %}
+                        <span class="badge bg-primary">Returned</span>
                     {% else %}
                         <span class="badge bg-danger">Rejected</span>
                     {% endif %}
@@ -32,6 +36,10 @@
                 <td>
                     {% if request.status == "Approved" and not request.is_returned %}
                         <a href="{% url 'request_return_book' request.id %}" class="btn btn-danger btn-sm">Return Book</a>
+                    {% elif request.status == "Pending Return" %}
+                        <span class="text-info">Return requested</span>
+                    {% elif request.status == "Returned" %}
+                        <span class="text-success">Book returned</span>
                     {% endif %}
                 </td>
             </tr>
