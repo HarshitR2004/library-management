@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'users',
     'borrowing',
     'rest_framework',
-    'django_extensions'
+    'django_extensions',
+    'dues'
     
 ]
 

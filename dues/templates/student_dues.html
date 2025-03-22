@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Dues</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for due in dues %}
+            <tr>
+                <td>{{ due.borrow.book.title }}</td>
+                <td>${{ due.amount }}</td>
+                <td>{{ due.borrow.due_date|date:"Y-m-d" }}</td>
+                <td>
+                    {% if due.is_paid %}
+                        <span class="badge bg-success">Paid</span>
+                    {% else %}
+                        <span class="badge bg-danger">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not due.is_paid %}
+                        <a href="{% url 'mock_payment' due.id %}" class="btn btn-primary btn-sm">Pay Now</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No outstanding dues.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

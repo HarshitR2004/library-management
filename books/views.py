@@ -54,7 +54,7 @@ def delete_item(request, item_type, item_id):
     """Only admins and librarians can delete books or journals."""
     
     if request.user.is_student():
-        return HttpResponseForbidden("You do not have acess to add new books")
+        return HttpResponseForbidden("You do not have permission to add new books")
     
     model_map = {
         "book": Book,
