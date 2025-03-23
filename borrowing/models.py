@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from books.models import Book
 from users.models import Student  
-from dues.models import Due
+# from dues.models import Due
 
 class Borrow(models.Model):
     """Model to track book borrow transactions with librarian approval."""
@@ -90,8 +90,8 @@ class Borrow(models.Model):
 
         if self.return_date > self.due_date:
             self.is_overdue = True
-            due = Due.objects.get_or_create(borrow=self)
-            due.calculate_due()  
+            # due = Due.objects.get_or_create(borrow=self)
+            # due.calculate_due()  
 
         self.book.available_copies += 1
         self.book.save()

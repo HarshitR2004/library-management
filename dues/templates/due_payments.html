@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'librarian_dues_dashboard' %}">Dues Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Payment History</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Payment History</h2>
+        <a href="{% url 'librarian_dues_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Due Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Book Information</h5>
+                    <p>
+                        <strong>Title:</strong> {{ due.borrow.book.title }}<br>
+                        {% if due.borrow.book.authors.exists %}
+                            <strong>Author:</strong> {{ due.borrow.book.authors.all|join:", " }}<br>
+                        {% endif %}
+                        <strong>Borrowed On:</strong> {{ due.borrow.borrow_date|date:"d M Y" }}<br>
+                        <strong>Due Date:</strong> {{ due.borrow.due_date|date:"d M Y" }}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Student Information</h5>
+                    <p>
+                        <strong>Name:</strong> {{ due.borrow.student.user.get_full_name|default:due.borrow.student.user.username }}<br>
+                        <strong>Email:</strong> {{ due.borrow.student.user.email }}<br>
+                        <strong>Due Amount:</strong> ₹{{ due.amount }}<br>
+                        <strong>Status:</strong> 
+                        {% if due.is_paid %}
+                            <span class="badge bg-success">Paid</span>
+                        {% else %}
+                            <span class="badge bg-danger">Unpaid</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Payment Records</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Amount</th>
+                        <th>Payment ID</th>
+                        <th>Order ID</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr class="{% if payment.is_successful %}table-success{% elif payment.status == 'failed' %}table-danger{% endif %}">
+                        <td>{{ payment.payment_date|date:"d M Y, H:i:s" }}</td>
+                        <td>₹{{ payment.amount_paid }}</td>
+                        <td>
+                            {% if payment.razorpay_payment_id %}
+                                <code>{{ payment.razorpay_payment_id }}</code>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <code>{{ payment.razorpay_order_id }}</code>
+                        </td>
+                        <td>
+                            {% if payment.is_successful %}
+                                <span class="badge bg-success">Successful</span>
+                            {% elif payment.status == 'failed' %}
+                                <span class="badge bg-danger">Failed</span>
+                            {% elif payment.status == 'created' %}
+                                <span class="badge bg-warning text-dark">Processing</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ payment.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if "MANUAL" in payment.razorpay_order_id %}
+                                <span class="badge bg-info text-dark">Manual (Librarian)</span>
+                            {% else %}
+                                <span class="badge bg-primary">Online</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="bi bi-credit-card" style="font-size: 2rem;"></i>
+                                <p class="mt-2">No payment records found for this due.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="mb-5">
+        <a href="{% url 'librarian_dues_dashboard' %}" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+        
+        {% if not due.is_paid %}
+        <form action="{% url 'mark_due_as_paid' due.id %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle me-1"></i> Mark as Paid
+            </button>
+        </form>
+        
+        <form action="{% url 'send_due_reminder' due.id %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning ms-2">
+                <i class="bi bi-envelope me-1"></i> Send Reminder
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
