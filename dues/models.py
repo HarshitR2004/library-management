@@ -22,7 +22,7 @@ class Due(models.Model):
         
     def calculate_fine_amount(self):
         """Calculate fine amount without modifying the database."""
-        daily_fine = getattr(settings, 'DAILY_FINE_RATE', 20.00)
+        daily_fine = 20.00
         
         if self.borrow.is_overdue:
             if self.borrow.return_date:
@@ -32,6 +32,7 @@ class Due(models.Model):
                 # Book not returned and is overdue
                 overdue_days = (timezone.now() - self.borrow.due_date).days
             return max(0, overdue_days * daily_fine)
+        
         return 0.00
 
     def update_fine(self):
@@ -241,22 +242,25 @@ class Payment(models.Model):
             return False
         
     def send_receipt_email(self):
-        """Send a payment receipt to the student."""
-        subject = "NITK Library Dues Payment Receipt"
-        message = (f"Dear {self.due.student.user.username},\n\n" 
-                       f"Your payment of INR {self.amount_paid} has been received.\n" 
-                       f"Order ID: {self.razorpay_order_id}\n"
-                       f"Payment ID: {self.razorpay_payment_id}\n"
-                       f"Payment Date: {self.payment_date.strftime('%d %b %Y, %I:%M %p')}\n\n"
-                       "Thank you for clearing your dues.\n\n"
-                       "NITK Library")
+        try:
+            """Send a payment receipt to the student."""
+            subject = "NITK Library Dues Payment Receipt"
+            message = (f"Dear {self.due.student.user.username},\n\n" 
+                        f"Your payment of INR {self.amount_paid} has been received.\n" 
+                        f"Order ID: {self.razorpay_order_id}\n"
+                        f"Payment ID: {self.razorpay_payment_id}\n"
+                        f"Payment Date: {self.payment_date.strftime('%d %b %Y, %I:%M %p')}\n\n"
+                        "Thank you for clearing your dues.\n\n"
+                        "NITK Library")
                                    
-        send_mail(
-                subject, 
-                message, 
-                'library@nitk.edu.in', 
-                [self.due.student.user.email]
-        )
+            send_mail(
+                    subject, 
+                    message, 
+                    'library@nitk.edu.in', 
+                    [self.due.student.user.email]
+            )
+        except Exception as e:
+            pass
             
     
     @property
