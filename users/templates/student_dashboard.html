@@ -4,11 +4,16 @@
     <h2>Student Dashboard</h2>
     <p>Welcome, {{ request.user.username }}!</p>
     
-    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-    <a href="{% url 'borrow_status' %}" class="btn btn-primary">Check Borrow Status</a>
-    <a href="{% url 'student_dues' %}" class="btn btn-primary">Manage your dues</a>
-    <div style="height: 50px;"></div> 
-
+    <div class="mb-3">
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        <a href="{% url 'borrow_status' %}" class="btn btn-primary">Check Borrow Status</a>
+        <a href="{% url 'student_dues' %}" class="btn btn-primary">Manage your dues</a>
+    </div>
+    
+    <div class="btn-group mb-4" role="group" aria-label="Library Resources">
+        <a href="{% url 'book_list' %}" class="btn btn-outline-primary {% if request.path == '/books/' %}active{% endif %}">Books</a>
+        <a href="{% url 'journal_list' %}" class="btn btn-outline-primary {% if '/journals/' in request.path %}active{% endif %}">Journals</a>
+    </div>
 
     {% include "book_list.html" %}
 </div>

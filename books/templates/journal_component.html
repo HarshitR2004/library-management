@@ -1,0 +1,46 @@
+<div class="card text-white bg-dark mb-3">
+    <div class="card-body">
+        <h3 class="card-title text-primary">{{ journal.title }}</h3>
+        
+        <button class="btn btn-secondary w-100 mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#journalDetails-{{ journal.id }}" aria-expanded="false">
+            View More
+        </button>
+
+        <div class="collapse mt-3" id="journalDetails-{{ journal.id }}">
+            <p><strong>Author:</strong> {{ journal.author.name }}</p>
+            <p><strong>Publisher:</strong> {{ journal.publisher }}</p>
+            <p><strong>Type:</strong> {{ journal.get_journal_type_display }}</p>
+            <p><strong>Publication Date:</strong> {{ journal.publication_date }}</p>
+            <p><strong>Available Copies:</strong> {{ journal.available_copies }}</p>
+
+            {% if journal.journal_type == 'Journal' and journal.issn %}
+                <p><strong>ISSN:</strong> {{ journal.issn }}</p>
+            {% endif %}
+        </div>
+        
+        <hr>
+
+        {% if request.user.is_student %}
+            <form action="{% url 'borrow_request' %}?item_type=journal&item_id={{ journal.id }}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary"
+                    {% if journal.available_copies == 0 or not journal.is_approved or existing_borrow %}disabled{% endif %}>
+                    {% if not journal.is_approved %}
+                        Approval Pending
+                    {% else %}
+                        Request to Borrow
+                    {% endif %}
+                </button>
+            </form>
+        {% elif request.user.is_librarian %}
+            {% if not journal.is_approved %}
+            <form action="{% url 'approve_journal' journal.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Approve Journal</button>
+            </form>
+            {% else %}
+            <span class="badge bg-success">Approved</span>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

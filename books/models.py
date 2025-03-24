@@ -53,6 +53,8 @@ class Journal(models.Model):
     journal_type = models.CharField(max_length=50, choices=JOURNAL_TYPE_CHOICES)
     publication_date = models.DateField()
     available_copies = models.IntegerField(default=1, validators=[MinValueValidator(0)])
+    is_approved = models.BooleanField(default=False)
+    
     issn = models.CharField(
         max_length=30,
         unique=True,
@@ -65,8 +67,18 @@ class Journal(models.Model):
         """Ensure ISSN is required only for Journals."""
         if self.journal_type == "Journal" and not self.issn:
             raise ValidationError("ISSN is required for Journals.")
+        elif self.journal_type != "Journal" and self.issn:
+            raise ValidationError("ISSN should only be provided for Journals.")
+
+    def save(self, *args, **kwargs):
+        """Override save to run clean() before saving."""
+        self.clean()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.title} ({self.journal_type}) - {self.publication_date} by {self.author.name}"
+        journal_info = f"{self.title} ({self.journal_type}) - {self.publication_date} by {self.author.name}"
+        if self.journal_type == "Journal" and self.issn:
+            journal_info += f" [ISSN: {self.issn}]"
+        return journal_info
 
 

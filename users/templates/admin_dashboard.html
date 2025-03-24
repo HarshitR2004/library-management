@@ -1,8 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Admin Dashboard</h2>
-<p>Welcome, {{ request.user.username }}! Welcom to NITK Library</p>
-<a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-<div style="height: 50px;"></div> 
-{% include "book_list.html" %}
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+    <p>Welcome, {{ request.user.username }}! Welcome to NITK Library</p>
+    
+    <div class="mb-3">
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+    
+    <div class="btn-group mb-4" role="group" aria-label="Library Resources">
+        <a href="{% url 'book_list' %}" class="btn btn-outline-primary {% if request.path == '/books/' %}active{% endif %}">Books</a>
+        <a href="{% url 'journal_list' %}" class="btn btn-outline-primary {% if '/journals/' in request.path %}active{% endif %}">Journals</a>
+    </div>
+    
+    <div style="height: 20px;"></div> 
+    {% include "book_list.html" %}
+</div>
 {% endblock %}

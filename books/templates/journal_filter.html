@@ -1,0 +1,48 @@
+<div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Search Journals</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" 
+                    placeholder="Search by title or ISSN..." 
+                    value="{{ request.GET.search|default:'' }}">
+            </div>
+            
+            <div class="col-md-3">
+                <label class="form-label">Type</label>
+                <select name="journal_type" class="form-select">
+                    <option value="">All Types</option>
+                    {% for choice_value, choice_display in journal_type_choices %}
+                        <option value="{{ choice_value }}" 
+                            {% if request.GET.journal_type == choice_value %}selected{% endif %}>
+                            {{ choice_display }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label class="form-label">Author</label>
+                <select name="author" class="form-select">
+                    <option value="">All Authors</option>
+                    {% for author in authors %}
+                        <option value="{{ author.id }}"
+                            {% if request.GET.author == author.id|stringformat:"i" %}selected{% endif %}>
+                            {{ author.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if request.GET.search or request.GET.journal_type or request.GET.author %}
+                <a href="{% url 'journal_list' %}" class="btn btn-outline-secondary">Clear Filters</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>

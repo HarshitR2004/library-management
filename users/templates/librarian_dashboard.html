@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Librarian Dashboard</h2>
-<p>Welcome, {{ request.user.username }}! You can manage books.</p>
-<a href="{% url 'add_book' %}" class="btn btn-success">Add Books</a>
-<a href="{% url 'manage-borrow-requests' %}" class="btn btn-primary">Manage Requests</a>
-<a href="{% url 'manage-returns' %}" class="btn btn-primary">Manage Returns</a>
-<a href="{% url 'librarian_dues_dashboard' %}" class="btn btn-primary">Manage Dues</a>
-<a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-<div style="height: 50px;"></div> 
-{% include "book_list.html" %}
+<div class="container mt-4">
+    <h2>Librarian Dashboard</h2>
+    <p>Welcome, {{ request.user.username }}! You can manage books.</p>
+    
+    <div class="mb-3">
+        <a href="{% url 'add_book' %}" class="btn btn-success">Add Books</a>
+        <a href="{% url 'add_journal' %}" class="btn btn-success">Add Journals</a>
+        <a href="{% url 'manage-borrow-requests' %}" class="btn btn-primary">Manage Requests</a>
+        <a href="{% url 'manage-returns' %}" class="btn btn-primary">Manage Returns</a>
+        <a href="{% url 'librarian_dues_dashboard' %}" class="btn btn-primary">Manage Dues</a>
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+    
+    <div class="btn-group mb-4" role="group" aria-label="Library Resources">
+        <a href="{% url 'book_list' %}" class="btn btn-outline-primary {% if request.path == '/books/' %}active{% endif %}">View Books</a>
+        <a href="{% url 'journal_list' %}" class="btn btn-outline-primary {% if '/journals/' in request.path %}active{% endif %}">View Journals</a>
+    </div>
+    
+    <div style="height: 20px;"></div> 
+    {% include "book_list.html" %}
+</div>
 {% endblock %}

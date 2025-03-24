@@ -5,6 +5,8 @@ from django.db.models import Q
 from .models import Book, Journal
 from .forms import AdditionForm, BookSearchForm
 from books.models import Author
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 class BookListView(ListView):
     model = Book
@@ -112,6 +114,63 @@ def delete_item(request, item_type, item_id):
             return redirect("admin_dashboard")
         elif getattr(request.user, "is_librarian", False):
             return redirect("librarian_dashboard")
+
+class JournalListView(ListView):
+    model = Journal
+    context_object_name = "journals"
+    template_name = "journal_list.html"
+    
+    def get_queryset(self):
+        queryset = Journal.objects.all().select_related('author')
+        
+        search_query = self.request.GET.get('search', '')
+        journal_type = self.request.GET.get('journal_type', '')
+        author_id = self.request.GET.get('author', '')
+        
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) | 
+                Q(issn__icontains=search_query)
+            )
+        
+        if journal_type:
+            queryset = queryset.filter(journal_type=journal_type)
+            
+        if author_id and author_id.isdigit():
+            queryset = queryset.filter(author_id=author_id)
+            
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['journal_type_choices'] = Journal.JOURNAL_TYPE_CHOICES
+        context['authors'] = Author.objects.all()
+        context['journal_type'] = self.request.GET.get('journal_type', '')
+                
+        context['current_params'] = '&'.join([
+            f"{key}={value}" 
+            for key, value in self.request.GET.items() 
+            if key != 'page'
+        ])
+        if context['current_params']:
+            context['current_params'] = '&' + context['current_params']
+            
+        return context
+
+@login_required
+def approve_journal(request, journal_id):
+    """Allow librarians to approve journals for borrowing."""
+    if not request.user.is_librarian():
+        return HttpResponseForbidden("Only librarians can approve journals.")
+        
+    journal = get_object_or_404(Journal, id=journal_id)
+    
+    if request.method == 'POST':
+        journal.is_approved = True
+        journal.save()
+        messages.success(request, f"Journal '{journal.title}' has been approved for borrowing.")
+        
+    return redirect('journal_list')
 
 
 

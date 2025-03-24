@@ -1,0 +1,16 @@
+{% include "journal_filter.html" %}
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for journal in journals %}
+        <div class="col">
+            {% include "journal_component.html" with journal=journal %}
+        </div>
+    {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-info">
+                <h4>No journals found</h4>
+                <p>Try adjusting your search criteria or browse all journals.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>

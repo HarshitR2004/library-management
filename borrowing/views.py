@@ -1,41 +1,65 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from .models import Borrow
 from users.models import Student, Librarian
-from books.models import Book
+from books.models import Book, Journal
 
 
 @login_required
-def borrow_request(request, book_id):
-    """Student requests to borrow a book."""
+def borrow_request(request):
+    """Create a borrow request for a book or journal."""
+    if not request.user.is_student():
+        return HttpResponseForbidden("Only students can borrow items.")
+        
+    item_type = request.GET.get('item_type')
+    item_id = request.GET.get('item_id')
     
+    if item_type not in ['book', 'journal']:
+        return HttpResponseBadRequest("Invalid item type.")
+        
     student = get_object_or_404(Student, user=request.user)
-    book = get_object_or_404(Book, id=book_id)
-
-    # Check if the student has already borrowed this specific book
-    existing_borrow = Borrow.objects.filter(
-        student=student, 
-        book=book,
-        is_returned=False
-    ).exclude(status="Rejected").exists()
+    
+    # Check borrow limit
+    if student.borrow_limit <= 0:
+        messages.error(request, "You have reached your borrowing limit.")
+        return redirect('student_dashboard')
+    
+    # Get the item based on type
+    if item_type == 'book':
+        item = get_object_or_404(Book, id=item_id)
+        # Check if already borrowed
+        existing_borrow = Borrow.objects.filter(student=student, book=item, is_returned=False).exists()
+    else:  # journal
+        item = get_object_or_404(Journal, id=item_id)
+        # Check if journal is approved
+        if not item.is_approved:
+            messages.error(request, "This journal has not been approved for borrowing yet.")
+            return redirect('journal_list')
+        # Check if already borrowed
+        existing_borrow = Borrow.objects.filter(student=student, journal=item, is_returned=False).exists()
     
     if existing_borrow:
-        return redirect("student_dashboard")
-
-    # Check if student has reached their borrow limit
-    active_borrows_count = Borrow.objects.filter(
-        student=student,
-        is_returned=False
-    ).exclude(status="Rejected").count()
+        messages.info(request, f"You already have a pending borrow request for this {item_type}.")
+        return redirect(f"{item_type}_list")
+        
+    # Check availability
+    if item.available_copies <= 0:
+        messages.error(request, f"No copies of this {item_type} are available.")
+        return redirect(f"{item_type}_list")
+        
+    # Create the borrow object
+    borrow_kwargs = {
+        'student': student,
+        f'{item_type}': item,
+        'status': 'Pending',
+    }
     
-    if active_borrows_count >= student.borrow_limit:
-        return redirect("student_dashboard")
-
-    borrow_entry = Borrow.objects.create(student=student, book=book, status="Pending")
+    borrow = Borrow.objects.create(**borrow_kwargs)
     
-    return redirect("student_dashboard")
-
+    messages.success(request, f"Borrow request for '{item.title}' has been submitted.")
+    return redirect('borrow_status')
 
 
 @login_required
