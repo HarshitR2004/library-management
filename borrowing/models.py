@@ -50,7 +50,6 @@ class Borrow(models.Model):
 
         self.save()
         
-        # Make email sending fault-tolerant
         try:
             send_mail(
                 "Book Borrow Request Approved", 
@@ -63,7 +62,6 @@ class Borrow(models.Model):
                 fail_silently=True 
             )
         except Exception as e:
-            # Log the error but continue processing
             print(f"Failed to send approval email: {e}")
 
     def reject(self):
