@@ -3,7 +3,7 @@ from .views import manage_borrow_requests, approve_borrow_request, reject_borrow
 
 
 urlpatterns = [
-    path("request/<int:book_id>/", borrow_request, name="borrow_request"),
+    path("request/", borrow_request, name="borrow_request"),
     
     path("status/", borrow_status, name="borrow_status"),
     

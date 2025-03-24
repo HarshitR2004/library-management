@@ -83,6 +83,7 @@ def add_item(request, item_type):
         form = AdditionForm(request.POST, model=model)  
         if form.is_valid():
             form.save()
+            messages.success(request, f"{item_type.title()} added successfully!")
             return redirect(f"{item_type}_list")  
     else:
         form = AdditionForm(model=model) 
@@ -159,17 +160,21 @@ class JournalListView(ListView):
 
 @login_required
 def approve_journal(request, journal_id):
-    """Allow librarians to approve journals for borrowing."""
-    if not request.user.is_librarian():
-        return HttpResponseForbidden("Only librarians can approve journals.")
+    """Allow librarians to toggle journal approval status."""
+    if not hasattr(request.user, 'is_librarian') or not request.user.is_librarian():
+        return HttpResponseForbidden("Only librarians can manage journal approval.")
         
     journal = get_object_or_404(Journal, id=journal_id)
     
     if request.method == 'POST':
-        journal.is_approved = True
-        journal.save()
-        messages.success(request, f"Journal '{journal.title}' has been approved for borrowing.")
-        
+        if 'toggle_approval' in request.POST:
+            journal.is_approved = not journal.is_approved
+            journal.save()
+            
+            status = "approved" if journal.is_approved else "unapproved"
+            messages.success(request, f"Journal '{journal.title}' has been {status}.")
+            
+    # Redirect back to the journal list
     return redirect('journal_list')
 
 

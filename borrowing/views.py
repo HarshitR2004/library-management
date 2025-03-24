@@ -21,35 +21,28 @@ def borrow_request(request):
         
     student = get_object_or_404(Student, user=request.user)
     
-    # Check borrow limit
     if student.borrow_limit <= 0:
         messages.error(request, "You have reached your borrowing limit.")
         return redirect('student_dashboard')
     
-    # Get the item based on type
     if item_type == 'book':
         item = get_object_or_404(Book, id=item_id)
-        # Check if already borrowed
         existing_borrow = Borrow.objects.filter(student=student, book=item, is_returned=False).exists()
-    else:  # journal
+    else:  
         item = get_object_or_404(Journal, id=item_id)
-        # Check if journal is approved
         if not item.is_approved:
             messages.error(request, "This journal has not been approved for borrowing yet.")
             return redirect('journal_list')
-        # Check if already borrowed
         existing_borrow = Borrow.objects.filter(student=student, journal=item, is_returned=False).exists()
     
     if existing_borrow:
         messages.info(request, f"You already have a pending borrow request for this {item_type}.")
         return redirect(f"{item_type}_list")
         
-    # Check availability
     if item.available_copies <= 0:
         messages.error(request, f"No copies of this {item_type} are available.")
         return redirect(f"{item_type}_list")
         
-    # Create the borrow object
     borrow_kwargs = {
         'student': student,
         f'{item_type}': item,

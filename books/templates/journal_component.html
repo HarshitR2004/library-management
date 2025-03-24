@@ -26,21 +26,50 @@
                 <button type="submit" class="btn btn-primary"
                     {% if journal.available_copies == 0 or not journal.is_approved or existing_borrow %}disabled{% endif %}>
                     {% if not journal.is_approved %}
-                        Approval Pending
+                        Not approved to Borrow
                     {% else %}
                         Request to Borrow
                     {% endif %}
                 </button>
             </form>
-        {% elif request.user.is_librarian %}
-            {% if not journal.is_approved %}
-            <form action="{% url 'approve_journal' journal.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success">Approve Journal</button>
-            </form>
-            {% else %}
-            <span class="badge bg-success">Approved</span>
-            {% endif %}
+        {% endif %}
+
+        {% if request.user.is_librarian %}
+            <div class="d-flex align-items-center mb-3">
+                <form id="approvalForm-{{ journal.id }}" method="POST" action="{% url 'approve_journal' journal.id %}" class="me-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="toggle_approval" value="true">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="approvalSwitch-{{ journal.id }}" 
+                            {% if journal.is_approved %}checked{% endif %}
+                            onchange="document.getElementById('approvalForm-{{ journal.id }}').submit()">
+                        <label class="form-check-label" for="approvalSwitch-{{ journal.id }}">
+                            {% if journal.is_approved %}
+                                <span class="text-success">Approved</span>
+                            {% else %}
+                                <span class="text-warning">Pending Approval</span>
+                            {% endif %}
+                        </label>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+        
+        {% if request.user.is_admin or request.user.is_librarian %}
+            <div class="text-center mb-3">
+                <form id="deleteForm-{{ journal.id }}" method="POST" action="{% url 'delete_item' 'journal' journal.id %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ journal.id }}')">Delete</button>
+                </form>
+            </div>
         {% endif %}
     </div>
 </div>
+
+<script>
+    function confirmDelete(journalId) {
+        if (confirm("Are you sure you want to delete this journal?")) {
+            document.getElementById("deleteForm-" + journalId).submit();
+        }
+    }
+</script>

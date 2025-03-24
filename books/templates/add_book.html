@@ -1,31 +1,144 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Add Book{% endblock %}
 
 {% block content %}
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center mb-4">Add a New Book</h2>
+<div class="container mt-4">
+    <h2>Add {% if item_type == 'book' %}Book{% else %}Journal{% endif %}</h2>
+
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
         
-        <form method="post" novalidate>
-            {% csrf_token %}
-            
-            {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label fw-bold">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            
-            <div class="d-flex justify-content-between">
-                <a href="javascript:history.back()" class="btn btn-outline-secondary">← Back</a>
-                <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger">{{ form.title.errors }}</div>
+                {% endif %}
             </div>
-        </form>
-    </div>
+            <div class="col-md-6">
+                <label class="form-label">Author</label>
+                {{ form.author }}
+                {% if form.author.errors %}
+                    <div class="text-danger">{{ form.author.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Publisher</label>
+                {{ form.publisher }}
+                {% if form.publisher.errors %}
+                    <div class="text-danger">{{ form.publisher.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Available Copies</label>
+                {{ form.available_copies }}
+                {% if form.available_copies.errors %}
+                    <div class="text-danger">{{ form.available_copies.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="book-fields" {% if item_type == 'journal' %}style="display: none;"{% endif %}>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Pages</label>
+                    {{ form.pages }}
+                    {% if form.pages.errors %}
+                        <div class="text-danger">{{ form.pages.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Price</label>
+                    {{ form.price }}
+                    {% if form.price.errors %}
+                        <div class="text-danger">{{ form.price.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Genre</label>
+                    {{ form.genre }}
+                    {% if form.genre.errors %}
+                        <div class="text-danger">{{ form.genre.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Topics (optional)</label>
+                    {{ form.topics }}
+                    {% if form.topics.errors %}
+                        <div class="text-danger">{{ form.topics.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="journal-fields" {% if item_type == 'book' %}style="display: none;"{% endif %}>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Publication Date</label>
+                    {{ form.publication_date }}
+                    {% if form.publication_date.errors %}
+                        <div class="text-danger">{{ form.publication_date.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Journal Type</label>
+                    {{ form.journal_type }}
+                    {% if form.journal_type.errors %}
+                        <div class="text-danger">{{ form.journal_type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-3 issn-field" id="issnField" style="display: none;">
+                <div class="col-md-12">
+                    <label class="form-label">ISSN (required for Journals only)</label>
+                    {{ form.issn }}
+                    {% if form.issn.errors %}
+                        <div class="text-danger">{{ form.issn.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Add {% if item_type == 'book' %}Book{% else %}Journal{% endif %}</button>
+            <a href="{% if request.user.is_librarian %}{% url 'librarian_dashboard' %}{% else %}{% url 'admin_dashboard' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle ISSN field visibility based on journal type
+        const journalTypeField = document.getElementById('{{ form.journal_type.id_for_label }}');
+        const issnField = document.getElementById('issnField');
+
+        // Show/hide ISSN field on load
+        if ("{{ item_type }}" === "journal") {
+            toggleIssnField();
+        }
+        
+        // Update ISSN field visibility when journal type changes
+        if (journalTypeField) {
+            journalTypeField.addEventListener('change', toggleIssnField);
+        }
+
+        function toggleIssnField() {
+            if (journalTypeField.value === 'Journal') {
+                issnField.style.display = 'block';
+            } else {
+                issnField.style.display = 'none';
+                document.getElementById('{{ form.issn.id_for_label }}').value = '';
+            }
+        }
+    });
+</script>
 {% endblock %}

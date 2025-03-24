@@ -38,9 +38,13 @@
             </div>
             
             <div class="col-12 mt-4">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-primary">
+                    Search & Filter
+                </button>
                 {% if request.GET.search or request.GET.journal_type or request.GET.author %}
-                <a href="{% url 'journal_list' %}" class="btn btn-outline-secondary">Clear Filters</a>
+                <a href="{% url 'journal_list' %}" class="btn btn-outline-secondary">
+                    Clear Filters
+                </a>
                 {% endif %}
             </div>
         </form>
