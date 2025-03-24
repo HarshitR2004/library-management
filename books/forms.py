@@ -26,7 +26,27 @@ class AdditionForm(forms.ModelForm):
         return author  
 
     
-
+class BookSearchForm(forms.Form):
+    search = forms.CharField(
+        required=False, 
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search by title or topics...'
+        })
+    )
+    
+    genre = forms.ChoiceField(
+        required=False,
+        choices=[('', 'All Genres')] + Book.GenreChoices,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    author = forms.ModelChoiceField(
+        required=False,
+        queryset=Author.objects.all(),
+        empty_label="All Authors",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
 
 
 

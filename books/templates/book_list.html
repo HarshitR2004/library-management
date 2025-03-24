@@ -1,3 +1,17 @@
-{% for book in books %}
-    {% include "book_component.html" with book=book %}
-{% endfor %}
+{% include "book_filter.html" %}
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for book in books %}
+            <div class="col">
+                {% include "book_component.html" with book=book %}
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-info">
+                    <h4>No books found</h4>
+                    <p>Try adjusting your search criteria or browse all books.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+

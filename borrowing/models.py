@@ -3,7 +3,6 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from books.models import Book
 from users.models import Student  
-# from dues.models import Due
 
 class Borrow(models.Model):
     """Model to track book borrow transactions with librarian approval."""
@@ -51,15 +50,21 @@ class Borrow(models.Model):
 
         self.save()
         
-        send_mail(
-        "Book Borrow Request Approved", 
-        f"Dear {self.student.user.username},\n\n"
-        f"Your request to borrow '{self.book.title}' has been approved.\n"
-        f"Due date: {self.due_date.strftime('%Y-%m-%d')}\n\n"
-        f"Best regards,\n NITK Library", 
-        "library@domain.com", 
-        [self.student.user.email]
-    )
+        # Make email sending fault-tolerant
+        try:
+            send_mail(
+                "Book Borrow Request Approved", 
+                f"Dear {self.student.user.username},\n\n"
+                f"Your request to borrow '{self.book.title}' has been approved.\n"
+                f"Due date: {self.due_date.strftime('%Y-%m-%d')}\n\n"
+                f"Best regards,\n NITK Library", 
+                "harshithranjan6971+test_lib1@gmail.com", 
+                [self.student.user.email],
+                fail_silently=True 
+            )
+        except Exception as e:
+            # Log the error but continue processing
+            print(f"Failed to send approval email: {e}")
 
     def reject(self):
         """Librarian rejects the request."""
@@ -75,7 +80,7 @@ class Borrow(models.Model):
         f"Unfortunately, your request to borrow '{self.book.title}' has been rejected.\n"
         f"Please contact the library for more information.\n\n"
         f"Best regards,\n NITK Library", 
-        "library@domain.com", 
+        "harshithranjan6971+test_lib1@gmail.com", 
         [self.student.user.email]
     )
 
@@ -90,8 +95,6 @@ class Borrow(models.Model):
 
         if self.return_date > self.due_date:
             self.is_overdue = True
-            # due = Due.objects.get_or_create(borrow=self)
-            # due.calculate_due()  
 
         self.book.available_copies += 1
         self.book.save()
@@ -99,9 +102,16 @@ class Borrow(models.Model):
         self.student.save()
 
         self.save()
-        send_mail("Book Return Confirmation", 
-              f"Dear {self.student.username},\n\nYou have returned '{self.book.title}'.", 
-              "library@domain.com", [self.student.email])
+        
+        try:
+            send_mail("Book Return Confirmation", 
+                f"Dear {self.student.user.username},\n\nYou have returned '{self.book.title}'.", 
+                "harshithranjan6971+test_lib1@gmail.com", 
+                [self.student.user.email],
+                fail_silently=True
+            )
+        except Exception as e:
+            print(f"Failed to send return confirmation email: {e}")
 
     def __str__(self):
         return f"{self.student.user.username} - {self.book.title} ({self.status})"

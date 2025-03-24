@@ -21,7 +21,6 @@ def borrow_request(request, book_id):
     ).exclude(status="Rejected").exists()
     
     if existing_borrow:
-        messages.warning(request, "You already have a request for this book.")
         return redirect("student_dashboard")
 
     # Check if student has reached their borrow limit
@@ -31,11 +30,9 @@ def borrow_request(request, book_id):
     ).exclude(status="Rejected").count()
     
     if active_borrows_count >= student.borrow_limit:
-        messages.warning(request, f"You've reached your borrow limit of {student.borrow_limit} books.")
         return redirect("student_dashboard")
 
     borrow_entry = Borrow.objects.create(student=student, book=book, status="Pending")
-    messages.success(request, f"Your request to borrow '{book.title}' has been submitted.")
     
     return redirect("student_dashboard")
 
@@ -54,7 +51,6 @@ def borrow_status(request):
 def manage_borrow_requests(request):
     """View for librarians to see and manage all borrow requests."""
     if not hasattr(request.user, "librarian"):
-        messages.error(request, "Only librarians can access this page.")
         return redirect("librarian_dashboard")
 
     pending_requests = Borrow.objects.filter(status="Pending")
@@ -81,7 +77,6 @@ def approve_borrow_request(request, borrow_id):
 
     
     borrow_request.approve()
-    messages.success(request, f"Approved borrow request for {borrow_request.student.user.username}")
 
     return redirect("manage-borrow-requests")
 
