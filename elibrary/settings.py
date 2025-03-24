@@ -19,7 +19,16 @@ RAZORPAY_KEY = "rzp_test_8D99l96KsCfm1N"
 RAZORPAY_SECRET = "7lYukJeaWhnFVUsQ7I9taL66"
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '38af49268f9c1e'
+EMAIL_HOST_PASSWORD = '713ab41548bbc1'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'no-reply@mailtrap.io'
+
+
 
 AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = "/"
