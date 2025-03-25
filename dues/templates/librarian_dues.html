@@ -2,177 +2,116 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Library Dues Dashboard</h2>
+    <h2 class="mb-4">Library Dues Management</h2>
 
     {% if messages %}
-    <div class="messages mb-4">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
-    </div>
     {% endif %}
 
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card text-white bg-primary h-100">
+            <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <h5 class="card-title">Total Dues</h5>
-                    <p class="display-4">{{ dues|length }}</p>
-                    <p class="card-text">
-                        <span class="text-white">Paid: {{ paid_dues|length }}</span><br>
-                        <span class="text-white">Unpaid: {{ unpaid_dues|length }}</span>
-                    </p>
+                    <h5>Pending Dues</h5>
+                    <h3>₹{{ total_pending }}</h3>
+                    <small>{{ unpaid_dues|length }} unpaid dues</small>
                 </div>
             </div>
         </div>
-
         <div class="col-md-4">
-            <div class="card text-white bg-success h-100">
+            <div class="card bg-success text-white">
                 <div class="card-body">
-                    <h5 class="card-title">Total Collected</h5>
-                    <p class="display-4">₹{{ total_collected }}</p>
-                    <p class="card-text">From {{ paid_dues|length }} paid dues</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card text-white bg-warning h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Total Pending</h5>
-                    <p class="display-4">₹{{ total_pending }}</p>
-                    <p class="card-text">From {{ unpaid_dues|length }} unpaid dues</p>
+                    <h5>Collected</h5>
+                    <h3>₹{{ total_collected }}</h3>
+                    <small>{{ paid_dues|length }} paid dues</small>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="card mb-4">
-        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <div class="card-header">
             <h5 class="mb-0">Unpaid Dues</h5>
-            <span class="badge bg-dark">{{ unpaid_dues|length }}</span>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Student</th>
-                            <th>Book Title</th>
-                            <th>Due Date</th>
-                            <th>Days Overdue</th>
-                            <th>Amount</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for due in unpaid_dues %}
-                        <tr>
-                            <td>
-                                <strong>{{ due.borrow.student.user.get_full_name|default:due.borrow.student.user.username }}</strong>
-                                <br>
-                                <small class="text-muted">{{ due.borrow.student.user.email }}</small>
-                            </td>
-                            <td>{{ due.borrow.book.title }}</td>
-                            <td>{{ due.borrow.due_date|date:"Y-m-d" }}</td>
-                            <td>
-                                {% if due.borrow.is_overdue %}
-                                    <span class="badge bg-danger">{{ due.borrow.due_date|timesince }}</span>
-                                {% else %}
-                                    <span class="badge bg-success">On time</span>
-                                {% endif %}
-                            </td>
-                            <td>₹{{ due.amount }}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <form action="{% url 'mark_due_as_paid' due.id %}" method="post" class="me-1">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <i class="bi bi-check-circle me-1"></i> Mark Paid
-                                        </button>
-                                    </form>
-                                    <form action="{% url 'send_due_reminder' due.id %}" method="post" class="me-1">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-warning btn-sm">
-                                            <i class="bi bi-envelope me-1"></i> Send Reminder
-                                        </button>
-                                    </form>
-                                    <a href="{% url 'due_payments' due.id %}" class="btn btn-info btn-sm">
-                                        <i class="bi bi-credit-card me-1"></i> Payments
-                                        </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center py-4">
-                                <div class="text-muted">
-                                    <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
-                                    <p class="mt-2">No unpaid dues found.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Book</th>
+                        <th>Due Date</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for due in unpaid_dues %}
+                    <tr>
+                        <td>{{ due.borrow.student.user.get_full_name }}</td>
+                        <td>{{ due.borrow.book.title }}</td>
+                        <td>{{ due.borrow.due_date|date:"d M Y" }}</td>
+                        <td>₹{{ due.amount }}</td>
+                        <td>
+                            <form action="{% url 'mark_due_as_paid' due.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Mark Paid</button>
+                            </form>
+                            <a href="{% url 'due_payments' due.id %}" class="btn btn-info btn-sm">History</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-3">No unpaid dues found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Paid Dues</h5>
-            <span class="badge bg-light text-dark">{{ paid_dues|length }}</span>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Payment History</h5>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Student</th>
-                            <th>Book Title</th>
-                            <th>Was Due On</th>
-                            <th>Amount Paid</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for due in paid_dues %}
-                        <tr>
-                            <td>
-                                <strong>{{ due.borrow.student.user.get_full_name|default:due.borrow.student.user.username }}</strong>
-                                <br>
-                                <small class="text-muted">{{ due.borrow.student.user.email }}</small>
-                            </td>
-                            <td>{{ due.borrow.book.title }}</td>
-                            <td>{{ due.borrow.due_date|date:"Y-m-d" }}</td>
-                            <td>₹{{ due.amount }}</td>
-                            <td>
-                                <a href="{% url 'due_payments' due.id %}" class="btn btn-info btn-sm">
-                                    <i class="bi bi-list me-1"></i> View Payments
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center py-4">
-                                <div class="text-muted">
-                                    <i class="bi bi-emoji-frown" style="font-size: 2rem;"></i>
-                                    <p class="mt-2">No paid dues found.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Book</th>
+                        <th>Paid On</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for due in paid_dues %}
+                    <tr>
+                        <td>{{ due.borrow.student.user.get_full_name }}</td>
+                        <td>{{ due.borrow.book.title }}</td>
+                        <td>{{ due.updated_at|date:"d M Y" }}</td>
+                        <td>₹{{ due.amount }}</td>
+                        <td>
+                            <a href="{% url 'due_payments' due.id %}" class="btn btn-info btn-sm">View Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-3">No payment history found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+
     <div class="mt-4">
-        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+        <a href="{% url 'librarian_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
 </div>
 {% endblock %}

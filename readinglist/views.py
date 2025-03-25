@@ -9,7 +9,6 @@ from books.models import Book
 @login_required
 def reading_list(request):
     """Display the reading list of the logged-in user."""
-    # Get all books from the user's reading list
     reading_list_items = ReadingList.objects.filter(user=request.user)
     books = [item.book for item in reading_list_items]
     

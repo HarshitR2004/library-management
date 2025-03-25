@@ -15,9 +15,6 @@ import dj_database_url
 import os 
 
 
-RAZORPAY_KEY = "rzp_test_8D99l96KsCfm1N"
-RAZORPAY_SECRET = "7lYukJeaWhnFVUsQ7I9taL66"
-
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

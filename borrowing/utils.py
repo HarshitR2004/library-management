@@ -8,7 +8,6 @@ def send_notification_email(subject, recipient, message=None, template=None, con
     
     """
     try:
-        # If template and context are provided, render the template
         if template and context:
             message = render_to_string(template, context)
         elif not message:
