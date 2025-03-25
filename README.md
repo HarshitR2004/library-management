@@ -28,7 +28,7 @@ pip install -r requirements.txt
 4. Configure environment variables:
 - Create a `.env` file in the root directory
 - Add the following variables:
-```
+
 Optional email settings (for notifications):
 ```
 - EMAIL_HOST=smtp.gmail.com
