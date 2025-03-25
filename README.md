@@ -30,8 +30,7 @@ pip install -r requirements.txt
 - Add the following variables:
 ```
 Optional email settings (for notifications):
-# Email configuration (optional)
-
+```
 - EMAIL_HOST=smtp.gmail.com
 - EMAIL_PORT=587
 - EMAIL_USE_TLS=True
