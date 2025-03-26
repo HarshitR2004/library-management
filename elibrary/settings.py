@@ -14,7 +14,7 @@ from pathlib import Path
 import dj_database_url
 import os 
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["iris-smartlibrary.onrender.com"]
 
 
 # Email Configuration
