@@ -65,7 +65,6 @@ INSTALLED_APPS = [
     'books',
     'users',
     'borrowing',
-    'rest_framework',
     'django_extensions',
     'dues',
     'readinglist',
