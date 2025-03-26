@@ -6,7 +6,14 @@ A comprehensive library management system built with Django that allows students
 
 [Watch Demo Video](https://youtu.be/placeholder) - A complete walkthrough of all features
 
-[Live Application Link](https://iris-smartlibrary.onrender.com/)
+## Deployment
+
+[Live Application Link](https://iris-smartlibrary.onrender.com/) - A live deployment of the app
+
+Student Username - test_student1
+Librarian Username - test_lib1
+
+password (common for all) - password123
 
 ## Installation
 
