@@ -6,6 +6,8 @@ A comprehensive library management system built with Django that allows students
 
 [Watch Demo Video](https://youtu.be/placeholder) - A complete walkthrough of all features
 
+[Live Application Link](https://iris-smartlibrary.onrender.com/)
+
 ## Installation
 
 1. Clone the repository:
@@ -60,7 +62,6 @@ python manage.py runserver
 - Admin panel: http://localhost:8000/admin/
 - Main application: http://localhost:8000/
 
-[Live Application Link]()
 
 ## Implemented Features
 
