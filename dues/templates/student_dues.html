@@ -39,7 +39,6 @@
                         <th>Due Date</th>
                         <th>Fine Amount</th>
                         <th>Status</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,25 +62,10 @@
                                 <span class="badge bg-secondary">No Fine</span>
                             {% endif %}
                         </td>
-                        <td>
-                            {% if not due.is_paid and due.amount > 0 %}
-                                <!-- Pay Now button for unpaid dues -->
-                                <a href="{% url 'initiate_payment' due.id %}" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-credit-card me-1"></i> Pay Now
-                                </a>
-                            {% elif due.is_paid %}
-                                <!-- View Details button for paid dues -->
-                                <a href="{% url 'view_due_details' due.id %}" class="btn btn-success btn-sm">
-                                    <i class="bi bi-receipt me-1"></i> View Details
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No action needed</span>
-                            {% endif %}
-                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-4">
+                        <td colspan="5" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
                                 <p class="mt-2">No dues found. You're all set!</p>
@@ -95,22 +79,8 @@
     </div>
 </div>
 
-{% if dues %}
-<div class="container mb-4">
-    <div class="card bg-light">
-        <div class="card-body">
-            <h5 class="card-title">About Library Fines</h5>
-            <p class="card-text">Fines are calculated at a rate of ₹20 per day for each day a book is returned after its due date. Paying your fines promptly ensures continued access to library services.</p>
-            <p class="card-text mb-0"><small class="text-muted">Note: If you believe there is an error in your fine calculation, please contact the library staff.</small></p>
-        </div>
-    </div>
-</div>
-{% endif %}
-
 <div class="mt-4">
     <button class="btn btn-primary" onclick="history.back()">Back</button>
 </div>
-
-
 
 {% endblock %}

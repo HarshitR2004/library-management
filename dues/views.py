@@ -11,7 +11,6 @@ from users.models import Student
 def student_dues(request):
     """Show all dues for the logged in student."""
     student = get_object_or_404(Student, user=request.user)
-    
     dues = Due.objects.filter(borrow__student=student).select_related('borrow')
     
     for due in dues:
@@ -23,23 +22,6 @@ def student_dues(request):
     }
     
     return render(request, 'student_dues.html', context)
-
-@login_required
-def view_due_details(request, due_id):
-    """Show details for a specific due."""
-    student = get_object_or_404(Student, user=request.user)
-    due = get_object_or_404(Due, id=due_id, borrow__student=student)
-    
-    payments = Payment.objects.filter(due=due).order_by('-payment_date')
-    
-    due.update_fine()
-    
-    context = {
-        'due': due,
-        'payments': payments,
-    }
-    
-    return render(request, 'due_details.html', context)
 
 # Librarian views
 @login_required
