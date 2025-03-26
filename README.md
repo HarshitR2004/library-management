@@ -10,10 +10,10 @@ A comprehensive library management system built with Django that allows students
 
 [Live Application Link](https://iris-smartlibrary.onrender.com/) - A live deployment of the app
 
-Student Username - test_student1
-Librarian Username - test_lib1
+- Student Username - test_student1
+- Librarian Username - test_lib1
 
-password (common for all) - password123
+- Password (common for all) - password123
 
 ## Installation
 
