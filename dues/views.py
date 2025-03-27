@@ -23,7 +23,6 @@ def student_dues(request):
     
     return render(request, 'student_dues.html', context)
 
-# Librarian views
 @login_required
 def librarian_dues_dashboard(request):
     """Show all dues - only for librarians."""
@@ -52,7 +51,7 @@ def librarian_dues_dashboard(request):
 @require_POST
 def record_manual_payment(request, due_id):
     """Record a manual payment - for librarians."""
-    if not request.user.is_librarian():
+    if not request.user.is_librarian:
         return HttpResponseForbidden("You don't have permission to access this page.")
     
     due = get_object_or_404(Due, id=due_id)
@@ -75,8 +74,9 @@ def record_manual_payment(request, due_id):
         due.save()
         
     except Exception as e:
+        return HttpResponseForbidden(f"Error processing payment: {e}")
     
-        return redirect('librarian_dues_dashboard')
+    return redirect('librarian_dues_dashboard')
 
 @login_required
 def due_payments(request, due_id):

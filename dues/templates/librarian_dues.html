@@ -61,48 +61,11 @@
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-success btn-sm">Mark Paid</button>
                             </form>
-                            <a href="{% url 'due_payments' due.id %}" class="btn btn-info btn-sm">History</a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="5" class="text-center py-3">No unpaid dues found</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">Payment History</h5>
-        </div>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Student</th>
-                        <th>Book</th>
-                        <th>Paid On</th>
-                        <th>Amount</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for due in paid_dues %}
-                    <tr>
-                        <td>{{ due.borrow.student.user.get_full_name }}</td>
-                        <td>{{ due.borrow.book.title }}</td>
-                        <td>{{ due.updated_at|date:"d M Y" }}</td>
-                        <td>₹{{ due.amount }}</td>
-                        <td>
-                            <a href="{% url 'due_payments' due.id %}" class="btn btn-info btn-sm">View Details</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center py-3">No payment history found</td>
                     </tr>
                     {% endfor %}
                 </tbody>
