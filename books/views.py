@@ -11,6 +11,7 @@ from django.contrib import messages
 class BookListView(ListView):
     model = Book
     context_object_name = "books"
+    template_name = "book_list.html"
     
     def get_queryset(self):
         queryset = Book.objects.all().select_related('author')
@@ -32,14 +33,13 @@ class BookListView(ListView):
             queryset = queryset.filter(author_id=author_id)
             
         return queryset
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['genre_choices'] = Book.GenreChoices
-        context['search_form'] = BookSearchForm(self.request.GET or None)
         context['authors'] = Author.objects.all()
-        context['genre'] = self.request.GET.get('genre', '')
-                
+        
+        # Add current filter params to context
         context['current_params'] = '&'.join([
             f"{key}={value}" 
             for key, value in self.request.GET.items() 

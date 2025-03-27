@@ -12,7 +12,7 @@ class BookSearchForm(forms.Form):
     
     genre = forms.ChoiceField(
         required=False,
-        choices=[('', 'All Genres')] + Book.GenreChoices,
+        choices=lambda: [('', 'All Genres')] + list(Book.GenreChoices),
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
@@ -23,6 +23,10 @@ class BookSearchForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['author'].queryset = Author.objects.all()
+
 class AdditionForm(forms.Form):
     """Dynamic form for adding both books and journals."""
     
@@ -31,13 +35,13 @@ class AdditionForm(forms.Form):
     publisher = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     available_copies = forms.IntegerField(min_value=0, initial=1, widget=forms.NumberInput(attrs={'class': 'form-control'}))
     
-    # Book-specific fields
+    # Book fields
     pages = forms.IntegerField(min_value=1, required=False, widget=forms.NumberInput(attrs={'class': 'form-control'}))
     price = forms.DecimalField(max_digits=8, decimal_places=2, required=False, widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}))
     genre = forms.ChoiceField(choices=Book.GenreChoices, required=False, widget=forms.Select(attrs={'class': 'form-select'}))
     topics = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}))
     
-    # Journal-specific fields
+    # Journal fields
     journal_type = forms.ChoiceField(choices=Journal.JOURNAL_TYPE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-select'}))
     publication_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
     issn = forms.CharField(max_length=30, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
