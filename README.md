@@ -34,9 +34,6 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 ```
 
-4. Configure environment variables:
-- Create a `.env` file in the root directory
-- Add the following variables:
 
 Optional email settings (for notifications):
 ```
@@ -47,13 +44,13 @@ Optional email settings (for notifications):
 - EMAIL_HOST_PASSWORD=your-app-password
 ```
 
-5. Run migrations:
+4. Run migrations:
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-6. Create a superuser:
+5. Create a superuser:
 ```bash
 python manage.py createsuperuser
 ```
