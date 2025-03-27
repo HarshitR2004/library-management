@@ -131,6 +131,7 @@ python manage.py runserver
 3. UI Issues
    - Responsive design breaks on some browsers
    - Form validation messages not consistently styled
+   - Filter Books does not work sometimes
 
 ## References
 
