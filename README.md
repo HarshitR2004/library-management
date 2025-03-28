@@ -137,9 +137,4 @@ python manage.py runserver
 2. [Bootstrap Documentation](https://getbootstrap.com/docs/)
 5. [Chai aur Code Django Playlist](https://www.youtube.com/playlist?list=PLu71SKxNbfoDOf-6vAcKmazT92uLnWAgy)
 
-## Screenshots
 
-![Login Page](screenshots\login-page.png)
-![Student Dashboard](screenshots\student-dashboard.png)
-![Book Catalog](screenshots\book_catalouge.png)
-![Due Management](screenshots\due-dashboard.png)
