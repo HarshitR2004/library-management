@@ -129,19 +129,17 @@ python manage.py runserver
    - Payment confirmation emails sometimes delayed
 
 3. UI Issues
-   - Responsive design breaks on some browsers
    - Filter Books does not work sometimes
 
 ## References
 
 1. [Django Documentation](https://docs.djangoproject.com/)
 2. [Bootstrap Documentation](https://getbootstrap.com/docs/)
-3. [MDN Web Docs](https://developer.mozilla.org/)
-4. [Real Python Tutorials](https://realpython.com/)
+5. [Chai aur Code Django Playlist](https://www.youtube.com/playlist?list=PLu71SKxNbfoDOf-6vAcKmazT92uLnWAgy)
 
 ## Screenshots
 
-![Login Page](screenshots\login page.png)
-![Student Dashboard](screenshots\student dashboard.png)
+![Login Page](screenshots\login-page.png)
+![Student Dashboard](screenshots\student-dashboard.png)
 ![Book Catalog](screenshots\book_catalouge.png)
-![Due Management](screenshots/dues.png)
+![Due Management](screenshots\due-dashboard.png)
