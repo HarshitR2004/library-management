@@ -34,7 +34,7 @@
                 <td>{{ request.borrow_date|date:"Y-m-d" }}</td>
                 <td>{% if request.due_date %}{{ request.due_date|date:"Y-m-d" }}{% else %} - {% endif %}</td>
                 <td>
-                    {% if request.status == "Approved" and not request.is_returned %}
+                    {% if request.status == "Approved" %}
                         <a href="{% url 'request_return_book' request.id %}" class="btn btn-danger btn-sm">Return Book</a>
                     {% elif request.status == "Pending Return" %}
                         <span class="text-info">Return requested</span>

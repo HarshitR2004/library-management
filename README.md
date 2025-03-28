@@ -130,7 +130,6 @@ python manage.py runserver
 
 3. UI Issues
    - Responsive design breaks on some browsers
-   - Form validation messages not consistently styled
    - Filter Books does not work sometimes
 
 ## References
@@ -142,8 +141,7 @@ python manage.py runserver
 
 ## Screenshots
 
-![Login Page](screenshots/login.png)
-![Student Dashboard](screenshots/student-dashboard.png)
-![Book Catalog](screenshots/book-catalog.png)
+![Login Page](screenshots\login page.png)
+![Student Dashboard](screenshots\student dashboard.png)
+![Book Catalog](screenshots\book_catalouge.png)
 ![Due Management](screenshots/dues.png)
-![Reading List](screenshots/reading-list.png)

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from .models import Borrow
 from users.models import Student
@@ -21,37 +22,39 @@ def borrow_request(request):
         
     student = get_object_or_404(Student, user=request.user)
     
-    if student.borrow_limit <= 0:
-        messages.error(request, "You have reached your borrowing limit.")
-        return redirect('student_dashboard')
+    active_statuses = ['Pending', 'Approved']
     
     if item_type == 'book':
         item = get_object_or_404(Book, id=item_id)
-        existing_borrow = Borrow.objects.filter(student=student, book=item, is_returned=False).exists()
+        existing_borrow = Borrow.objects.filter(
+            student=student, 
+            book=item, 
+            status__in=active_statuses
+        ).exists()
     else:  
         item = get_object_or_404(Journal, id=item_id)
         if not item.is_approved:
-            messages.error(request, "This journal has not been approved for borrowing yet.")
             return redirect('journal_list')
-        existing_borrow = Borrow.objects.filter(student=student, journal=item, is_returned=False).exists()
+        existing_borrow = Borrow.objects.filter(
+            student=student, 
+            journal=item, 
+            status__in=active_statuses
+        ).exists()
     
     if existing_borrow:
-        messages.info(request, f"You already have a pending borrow request for this {item_type}.")
+        return redirect(f"{item_type}_list")
+    
+    try:
+        borrow_kwargs = {
+            'student': student,
+            f'{item_type}': item,
+            'status': 'Pending'
+        }
+        borrow = Borrow.objects.create(**borrow_kwargs)
+        
+    except ValidationError as e:
         return redirect(f"{item_type}_list")
         
-    if item.available_copies <= 0:
-        messages.error(request, f"No copies of this {item_type} are available.")
-        return redirect(f"{item_type}_list")
-        
-    borrow_kwargs = {
-        'student': student,
-        f'{item_type}': item,
-        'status': 'Pending',
-    }
-    
-    borrow = Borrow.objects.create(**borrow_kwargs)
-    
-    messages.success(request, f"Borrow request for '{item.title}' has been submitted.")
     return redirect('borrow_status')
 
 
@@ -86,29 +89,32 @@ def manage_borrow_requests(request):
 @login_required
 def approve_borrow_request(request, borrow_id):
     """Handle librarian approval of borrow requests."""
-    if not hasattr(request.user, "librarian"):
-        messages.error(request, "Unauthorized access.")
-        return redirect("librarian_dashboard")
+    if not request.user.is_librarian:
+        return HttpResponseForbidden("Only librarians can approve requests.")
 
-    borrow_request = get_object_or_404(Borrow, id=borrow_id)
-
+    borrow = get_object_or_404(Borrow, id=borrow_id, status='Pending')
     
-    borrow_request.approve()
-
-    return redirect("manage-borrow-requests")
+    try:
+        borrow.approve()
+    except Exception as e:
+        HttpResponseBadRequest("Error approving request: {str(e)}")
+    
+    return redirect('manage-borrow-requests')
 
 @login_required
 def reject_borrow_request(request, borrow_id):
     """Handle librarian rejection of borrow requests."""
-    if not hasattr(request.user, "librarian"):
-        return redirect("librarian_dashboard")
+    if not request.user.is_librarian:
+        return HttpResponseForbidden("Only librarians can reject requests.")
 
-    borrow_request = get_object_or_404(Borrow, id=borrow_id)
+    borrow = get_object_or_404(Borrow, id=borrow_id, status='Pending')
     
-    borrow_request.reject()
-
-    return redirect("manage-borrow-requests")
-
+    try:
+        borrow.reject()
+    except Exception as e:
+        HttpResponseBadRequest("Error rejecting request: {str(e)}")
+    
+    return redirect('manage-borrow-requests')
 
 @login_required
 def request_return_book(request, borrow_id):
@@ -141,3 +147,8 @@ def manage_returns(request):
 
     context = {"pending_returns": pending_returns}
     return render(request, "manage_returns.html", context)
+
+# Change the return_book method from:
+def return_book(self):
+    if self.status == 'Returned':
+        raise ValueError("This item has already been returned.")

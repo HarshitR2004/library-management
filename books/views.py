@@ -83,7 +83,6 @@ def add_item(request, item_type):
         form = AdditionForm(request.POST, model=model)  
         if form.is_valid():
             form.save()
-            messages.success(request, f"{item_type.title()} added successfully!")
             return redirect(f"{item_type}_list")  
     else:
         form = AdditionForm(model=model) 
@@ -172,7 +171,6 @@ def approve_journal(request, journal_id):
             journal.save()
             
             status = "approved" if journal.is_approved else "unapproved"
-            messages.success(request, f"Journal '{journal.title}' has been {status}.")
             
     # Redirect back to the journal list
     return redirect('journal_list')

@@ -1,12 +1,10 @@
 from django.db import models
-from django.core.mail import send_mail
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from books.models import Book
 from users.models import Student  
 from books.models import Journal, Book
 from borrowing.utils import send_notification_email
-from django.conf import settings
 
 class Borrow(models.Model):
     """Model to track book borrow transactions with librarian approval."""
@@ -25,9 +23,13 @@ class Borrow(models.Model):
     borrow_date = models.DateTimeField(default=timezone.now)
     due_date = models.DateTimeField(null=True, blank=True)
     return_date = models.DateTimeField(null=True, blank=True)
-    is_returned = models.BooleanField(default=False)
     is_overdue = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+
+    @property
+    def is_returned(self):
+        """Use status field instead of separate boolean"""
+        return self.status == 'Returned'
 
     def clean(self):
         """Validate the borrow object."""
@@ -150,11 +152,10 @@ NITK Library"""
 
     def return_book(self):
         """Process item return"""
-        if self.is_returned:
+        if self.status == 'Returned':
             raise ValueError("This item has already been returned.")
         
         self.return_date = timezone.now()
-        self.is_returned = True
         self.status = "Returned"
         self.is_overdue = self.return_date > self.due_date
 
