@@ -99,7 +99,6 @@ class AdditionForm(forms.Form):
     
     def save(self):
         """Create and save a new book or journal instance with author."""
-        # Get or create author
         author_name = self.cleaned_data['author_name']
         author, created = Author.objects.get_or_create(name=author_name)
 
