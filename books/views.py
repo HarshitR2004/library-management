@@ -13,25 +13,28 @@ class BookListView(ListView):
     template_name = "book_list.html"
     
     def get_queryset(self):
-        queryset = Book.objects.all().select_related('author')
-        
-        search_query = self.request.GET.get('search', '')
-        genre = self.request.GET.get('genre', '')
-        author_name = self.request.GET.get('author_name', '')
-        
-        if search_query:
-            queryset = queryset.filter(
-                Q(title__icontains=search_query) | 
-                Q(topics__icontains=search_query)
-            )
-        
-        if genre:
-            queryset = queryset.filter(genre=genre)
+        # Only filter if not admin/librarian dashboard
+        if self.request.user.is_student:
+            queryset = Book.objects.all().select_related('author')
             
-        if author_name:
-            queryset = queryset.filter(author__name__icontains=author_name)
+            search_query = self.request.GET.get('search', '')
+            genre = self.request.GET.get('genre', '')
+            author_name = self.request.GET.get('author', '')
+
+            if search_query:
+                queryset = queryset.filter(
+                    Q(title__icontains=search_query) | 
+                    Q(topics__icontains=search_query)
+                )
             
-        return queryset
+            if genre:
+                queryset = queryset.filter(genre=genre)
+                
+            if author_name:  
+                queryset = queryset.filter(author__name__icontains=author_name)
+     
+            return queryset
+        return Book.objects.all()
 
     def get_context_data(self, **kwargs):
         
@@ -53,24 +56,19 @@ class BookListView(ListView):
         return context
     
     def get_template_names(self):
-        """Return different templates based on the user's role."""
-        user = self.request.user
-        if hasattr(user, "is_admin") and user.is_admin():
-            return ["admin_dashboard.html"]
-        elif hasattr(user, "is_librarian") and user.is_librarian():
-            return ["librarian_dashboard.html"]
-        elif hasattr(user, "is_student") and user.is_student():
-            return ["student_dashboard.html"]
-        else:
-            return HttpResponseForbidden("You do not have permission to view this page.") 
+        # Keep template selection based on user role
+        if self.request.user.is_admin:
+            return ['admin_dashboard.html']
+        elif self.request.user.is_librarian:
+            return ['librarian_dashboard.html']
+        elif self.request.user.is_student:
+            return ['student_dashboard.html']
     
     
 def add_item(request, item_type):
     """Handles adding both Books and Journals dynamically."""
     
-    if request.user.is_student():
-        return HttpResponseForbidden("You do not have access to add new books.")
-    
+   
     model_map = {
         "book": Book,
         "journal": Journal
@@ -92,9 +90,6 @@ def add_item(request, item_type):
 
 def delete_item(request, item_type, item_id):
     """Only admins and librarians can delete books or journals."""
-    
-    if request.user.is_student():
-        return HttpResponseForbidden("You do not have permission to add new books")
     
     model_map = {
         "book": Book,
@@ -157,7 +152,7 @@ class JournalListView(ListView):
 @login_required
 def approve_journal(request, journal_id):
     """Allow librarians to toggle journal approval status."""
-    if not hasattr(request.user, 'is_librarian') or not request.user.is_librarian():
+    if not hasattr(request.user, 'is_librarian'):
         return HttpResponseForbidden("Only librarians can manage journal approval.")
         
     journal = get_object_or_404(Journal, id=journal_id)
@@ -167,7 +162,6 @@ def approve_journal(request, journal_id):
             journal.is_approved = not journal.is_approved
             journal.save()
             
-            status = "approved" if journal.is_approved else "unapproved"
             
     return redirect('journal_list')
 

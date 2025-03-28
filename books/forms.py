@@ -16,7 +16,7 @@ class BookSearchForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
-    author_name = forms.CharField(
+    author = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',

@@ -1,5 +1,4 @@
 <div class="card mb-4">
-    
     <div class="card-header bg-dark text-white">
         <h5 class="mb-0">Search Books</h5>
     </div>
@@ -25,28 +24,26 @@
                     {% endfor %}
                 </select>
             </div>
-            
+
             <div class="col-md-3">
-                <label class="form-label">Author</label>
-                <select name="author" class="form-select">
-                    <option value="">All Authors</option>
-                    {% for author in authors %}
-                        <option value="{{ author.id }}"
-                            {% if request.GET.author == author.id|stringformat:"i" %}selected{% endif %}>
-                            {{ author.name }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <label class="form-label"> Author</label>
+                <input type="text" name="author" class="form-control" 
+                placeholder="Search by author name..."
+                value="{{ request.GET.author|default:'' }}">
             </div>
-            
+
             <div class="col-12 mt-4">
                 <button type="submit" class="btn btn-primary">
                     Search & Filter
                 </button>
                 {% if request.GET.search or request.GET.genre or request.GET.author %}
-                <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">
-                    Clear Filters
-                </a>
+                    {% if request.user.is_admin %}
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">Clear Filters</a>
+                    {% elif request.user.is_librarian %}
+                        <a href="{% url 'librarian_dashboard' %}" class="btn btn-outline-secondary">Clear Filters</a>
+                    {% else %}
+                        <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">Clear Filters</a>
+                    {% endif %}
                 {% endif %}
             </div>
         </form>
