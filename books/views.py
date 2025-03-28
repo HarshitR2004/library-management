@@ -169,7 +169,6 @@ def approve_journal(request, journal_id):
             
             status = "approved" if journal.is_approved else "unapproved"
             
-    # Redirect back to the journal list
     return redirect('journal_list')
 
 
