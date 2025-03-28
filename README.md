@@ -4,7 +4,7 @@ A comprehensive library management system built with Django that allows students
 
 ## Demo Video
 
-[Watch Demo Video](https://youtu.be/placeholder) - A complete walkthrough of all features
+[Watch Demo Video](https://drive.google.com/file/d/1WIbcvfCkUngyvC_Ef2v1LqNTV9pvb8Eb/view?usp=sharing)
 
 ## Deployment
 
