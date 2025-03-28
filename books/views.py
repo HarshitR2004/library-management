@@ -3,10 +3,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from .models import Book, Journal
-from .forms import AdditionForm, BookSearchForm
+from .forms import AdditionForm
 from books.models import Author
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
 class BookListView(ListView):
     model = Book
@@ -35,9 +34,12 @@ class BookListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        
         context = super().get_context_data(**kwargs)
         context['genre_choices'] = Book.GenreChoices
         context['authors'] = Author.objects.all()
+        
+        
         
         # Add current filter params to context
         context['current_params'] = '&'.join([

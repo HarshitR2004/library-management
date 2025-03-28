@@ -16,7 +16,6 @@ class BookSearchForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
-    # Add author name search instead of dropdown
     author_name = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={
@@ -33,7 +32,6 @@ class AdditionForm(forms.Form):
     """Dynamic form for adding both books and journals."""
     
     title = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    # Replace author field with a text input
     author_name = forms.CharField(
         max_length=255, 
         widget=forms.TextInput(attrs={
