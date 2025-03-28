@@ -25,7 +25,7 @@ class Book(models.Model):
     ('IT', 'IT')
 ]
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, db_index=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     publisher = models.CharField(max_length=255)
     pages = models.IntegerField(validators=[MinValueValidator(1)])
