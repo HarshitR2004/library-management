@@ -18,7 +18,7 @@ class BookListView(ListView):
         
         search_query = self.request.GET.get('search', '')
         genre = self.request.GET.get('genre', '')
-        author_id = self.request.GET.get('author', '')
+        author_name = self.request.GET.get('author_name', '')
         
         if search_query:
             queryset = queryset.filter(
@@ -29,8 +29,8 @@ class BookListView(ListView):
         if genre:
             queryset = queryset.filter(genre=genre)
             
-        if author_id and author_id.isdigit():
-            queryset = queryset.filter(author_id=author_id)
+        if author_name:
+            queryset = queryset.filter(author__name__icontains=author_name)
             
         return queryset
 
@@ -74,9 +74,6 @@ def add_item(request, item_type):
         "journal": Journal
     }
     
-    if item_type not in model_map:
-        return redirect("home")  
-    
     model = model_map[item_type]  
 
     if request.method == "POST":
@@ -102,8 +99,6 @@ def delete_item(request, item_type, item_id):
         "journal": Journal
     }
     
-    if item_type not in model_map:
-        return redirect("home") 
 
     model = model_map[item_type]
     item = get_object_or_404(model, id=item_id)

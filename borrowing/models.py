@@ -170,7 +170,6 @@ NITK Library"""
         self.student.save()
         self.save()
         
-        # Send return confirmation email
         self.send_return_confirmation_email()
 
     def __str__(self):

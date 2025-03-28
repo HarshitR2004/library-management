@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Add Book{% endblock %}
+{% block title %}Add {% if item_type == 'book' %}Book{% else %}Journal{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -18,10 +18,10 @@
                 {% endif %}
             </div>
             <div class="col-md-6">
-                <label class="form-label">Author</label>
-                {{ form.author }}
-                {% if form.author.errors %}
-                    <div class="text-danger">{{ form.author.errors }}</div>
+                <label class="form-label">Author Name</label>
+                {{ form.author_name }}
+                {% if form.author_name.errors %}
+                    <div class="text-danger">{{ form.author_name.errors }}</div>
                 {% endif %}
             </div>
         </div>
@@ -97,7 +97,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="row mb-3 issn-field" id="issnField" style="display: none;">
+            <div class="row mb-3 issn-field" id="issnField" {% if not form.journal_type.value == 'Journal' %}style="display: none;"{% endif %}>
                 <div class="col-md-12">
                     <label class="form-label">ISSN (required for Journals only)</label>
                     {{ form.issn }}
@@ -115,19 +115,18 @@
     </form>
 </div>
 
+{% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Handle ISSN field visibility based on journal type
         const journalTypeField = document.getElementById('{{ form.journal_type.id_for_label }}');
         const issnField = document.getElementById('issnField');
 
-        // Show/hide ISSN field on load
-        if ("{{ item_type }}" === "journal") {
-            toggleIssnField();
-        }
-        
-        // Update ISSN field visibility when journal type changes
         if (journalTypeField) {
+            if ("{{ item_type }}" === "journal") {
+                toggleIssnField();
+            }
+            
+            // Update ISSN field visibility when journal type changes
             journalTypeField.addEventListener('change', toggleIssnField);
         }
 
@@ -141,4 +140,6 @@
         }
     });
 </script>
+{% endblock %}
+
 {% endblock %}

@@ -16,11 +16,13 @@ class BookSearchForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
-    author = forms.ModelChoiceField(
+    # Add author name search instead of dropdown
+    author_name = forms.CharField(
         required=False,
-        queryset=Author.objects.all(),
-        empty_label="All Authors",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search by author name...'
+        })
     )
 
     def __init__(self, *args, **kwargs):
@@ -31,7 +33,14 @@ class AdditionForm(forms.Form):
     """Dynamic form for adding both books and journals."""
     
     title = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    author = forms.ModelChoiceField(queryset=Author.objects.all(), widget=forms.Select(attrs={'class': 'form-select'}))
+    # Replace author field with a text input
+    author_name = forms.CharField(
+        max_length=255, 
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter author name'
+        })
+    )
     publisher = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     available_copies = forms.IntegerField(min_value=0, initial=1, widget=forms.NumberInput(attrs={'class': 'form-control'}))
     
@@ -91,11 +100,15 @@ class AdditionForm(forms.Form):
         return cleaned_data
     
     def save(self):
-        """Create and save a new book or journal instance."""
+        """Create and save a new book or journal instance with author."""
+        # Get or create author
+        author_name = self.cleaned_data['author_name']
+        author, created = Author.objects.get_or_create(name=author_name)
+
         if self.model == Book:
             return Book.objects.create(
                 title=self.cleaned_data['title'],
-                author=self.cleaned_data['author'],
+                author=author,  
                 publisher=self.cleaned_data['publisher'],
                 pages=self.cleaned_data['pages'],
                 price=self.cleaned_data['price'],
@@ -106,7 +119,7 @@ class AdditionForm(forms.Form):
         elif self.model == Journal:
             return Journal.objects.create(
                 title=self.cleaned_data['title'],
-                author=self.cleaned_data['author'],
+                author=author,  
                 publisher=self.cleaned_data['publisher'],
                 journal_type=self.cleaned_data['journal_type'],
                 publication_date=self.cleaned_data['publication_date'],

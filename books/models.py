@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
-from enum import Enum
 
 class Author(models.Model):
     """Stores author details."""
