@@ -69,9 +69,9 @@ def record_manual_payment(request, due_id):
             status='successful',
             is_successful=True
         )
-        
         due.is_paid = True
         due.save()
+        payment.send_receipt_email()
         
     except Exception as e:
         return HttpResponseForbidden(f"Error processing payment: {e}")
