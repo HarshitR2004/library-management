@@ -93,9 +93,7 @@ python manage.py runserver
 
 ### Due Management
 - Automated fine calculation
-- Manual payment processing
 - Payment history tracking
-- Due notifications
 - Librarian dashboard for due management
 
 ### Email Notifications
