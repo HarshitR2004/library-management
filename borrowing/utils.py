@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.http import HttpResponseForbidden
+
 
 def send_notification_email(subject, recipient, message=None, template=None, context=None, fail_silently=True):
     """
@@ -21,5 +23,5 @@ def send_notification_email(subject, recipient, message=None, template=None, con
             fail_silently=fail_silently
         )
     except Exception as e:
-        print(f"Email sending failed: {str(e)}")
-        return False
+        return HttpResponseForbidden(f"Failed to send email: {str(e)}")
+        
