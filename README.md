@@ -19,7 +19,7 @@ A comprehensive library management system built with Django that allows students
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/IRIS_Web_Rec25_231MT017.git
+git clone https://github.com/HarshitR2004/IRIS_Web_Rec25_231MT017.git
 ```
 
 2. Create and activate a virtual environment:
