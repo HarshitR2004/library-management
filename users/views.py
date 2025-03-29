@@ -15,7 +15,6 @@ def login_view(request):
         if user is not None:
             login(request, user)
 
-            # Redirect based on user role
             if user.is_admin():
                 return redirect("admin_dashboard")
             elif user.is_librarian():
