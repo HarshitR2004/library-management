@@ -66,8 +66,6 @@ class Student(models.Model):
         self.user.save()
         super().save(*args, **kwargs)
 
-    def can_borrow(self):
-        return not self.is_banned and self.dues == 0.00
 
 # Librarian Model
 class Librarian(models.Model):
