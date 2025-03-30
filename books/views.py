@@ -13,8 +13,6 @@ class BookListView(ListView):
     template_name = "book_list.html"
     
     def get_queryset(self):
-        # Only filter if not admin/librarian dashboard
-        if self.request.user.is_student:
             queryset = Book.objects.all().select_related('author')
             
             search_query = self.request.GET.get('search', '')
@@ -34,15 +32,12 @@ class BookListView(ListView):
                 queryset = queryset.filter(author__name__icontains=author_name)
      
             return queryset
-        return Book.objects.all()
 
     def get_context_data(self, **kwargs):
         
         context = super().get_context_data(**kwargs)
         context['genre_choices'] = Book.GenreChoices
         context['authors'] = Author.objects.all()
-        
-        
         
         # Add current filter params to context
         context['current_params'] = '&'.join([
